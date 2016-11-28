@@ -1030,4 +1030,6 @@ public interface Server extends PluginMessageRecipient {
     // Spigot end
 
     void reloadPermissions(); // Paper
+
+    boolean reloadCommandAliases(); // Paper
 }

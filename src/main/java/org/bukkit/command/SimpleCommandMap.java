@@ -283,4 +283,10 @@ public class SimpleCommandMap implements CommandMap {
             }
         }
     }
+
+    // Paper start - Expose Known Commands
+    public Map<String, Command> getKnownCommands() {
+        return knownCommands;
+    }
+    // Paper end
 }
