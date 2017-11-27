@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
 
+import com.destroystokyo.paper.event.server.PaperServerListPingEvent;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -151,7 +152,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
     private java.util.List<String> sample;
 
     /**
-     * @deprecated Will be replaced in 1.13
+     * @deprecated Will be removed in 1.13, use {@link PaperServerListPingEvent#getPlayerSample()}
      * @param sample the new player list sample
      */
     @Deprecated
@@ -160,7 +161,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
     }
 
     /**
-     * @deprecated Will be replaced in 1.13
+     * @deprecated Will be removed in 1.13, use {@link PaperServerListPingEvent#getPlayerSample()}
      * @return the player list sample
      */
     @Deprecated

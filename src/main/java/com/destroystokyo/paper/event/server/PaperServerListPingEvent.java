@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.destroystokyo.paper.network.StatusClient;
 import com.destroystokyo.paper.profile.PlayerProfile;
+import com.google.common.base.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -313,6 +314,27 @@ public class PaperServerListPingEvent extends ServerListPingEvent implements Can
             if (originalPlayerCount) {
                 numPlayers--;
             }
+        }
+    }
+
+    // TODO: Remove in 1.13
+
+    @Override
+    @Deprecated
+    public List<String> getSampleText() {
+        List<String> sampleText = new ArrayList<>();
+        for (PlayerProfile profile : getPlayerSample()) {
+            sampleText.add(Strings.nullToEmpty(profile.getName()));
+        }
+        return sampleText;
+    }
+
+    @Override
+    @Deprecated
+    public void setSampleText(List<String> sample) {
+        getPlayerSample().clear();
+        for (String name : sample) {
+            getPlayerSample().add(Bukkit.createProfile(name));
         }
     }
 
