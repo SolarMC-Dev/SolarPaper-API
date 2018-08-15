@@ -76,6 +76,37 @@ public interface World extends PluginMessageRecipient, Metadatable {
      */
     public Block getBlockAt(Location location);
 
+    // Paper start
+    /**
+     * Gets the {@link Block} at the given block key
+     *
+     * @param key The block key. See {@link Block#getBlockKey()}
+     * @return Block at the key
+     * @see Location#toBlockKey()
+     * @see Block#getBlockKey()
+     */
+    public default Block getBlockAtKey(long key) {
+        int x = (int) ((key << 37) >> 37);
+        int y = (int) (key >>> 54);
+        int z = (int) ((key << 10) >> 37);
+        return getBlockAt(x, y, z);
+    }
+    /**
+     * Gets the {@link Location} at the given block key
+     *
+     * @param key The block key. See {@link Location#toBlockKey()}
+     * @return Location at the key
+     * @see Location#toBlockKey()
+     * @see Block#getBlockKey()
+     */
+    public default Location getLocationAtKey(long key) {
+        int x = (int) ((key << 37) >> 37);
+        int y = (int) (key >>> 54);
+        int z = (int) ((key << 10) >> 37);
+        return new Location(this, x, y, z);
+    }
+    // Paper end
+
     /**
      * Gets the block type ID at the given coordinates
      *

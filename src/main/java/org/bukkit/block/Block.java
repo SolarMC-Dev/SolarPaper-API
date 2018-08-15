@@ -135,6 +135,30 @@ public interface Block extends Metadatable {
      */
     int getZ();
 
+    // Paper Start
+
+    /**
+     * Returns this block's coordinates packed into a long value
+     * <p></p>
+     * The return value can be computed as follows:
+     * <p></p>
+     * {@code long value = ((long)getX() & 0x7FFFFFF) | (((long)getZ() & 0x7FFFFFF) << 27) | ((long)getY() << 54);}
+     * <p></p>
+     * And may be unpacked as follows:
+     * <p></p>
+     * {@code int x = (int) ((packed << 37) >> 37);}
+     * <p></p>
+     * {@code int y = (int) (packed >>> 54);}
+     * <p></p>
+     * {@code int z = (int) ((packed << 10) >> 37);}
+     *
+     * @return This block's x, y, and z coordinates packed into a long value
+     */
+    public default long getBlockKey() {
+        return ((long)getX() & 0x7FFFFFF) | (((long)getZ() & 0x7FFFFFF) << 27) | ((long)getY() << 54);
+    }
+    // Paper End
+
     /**
      * Gets the Location of the block
      *

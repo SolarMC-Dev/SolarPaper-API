@@ -10,7 +10,6 @@ import org.bukkit.util.Vector;
 
 // Paper start
 import java.util.Collection;
-import java.util.Collections;
 import java.util.function.Predicate;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -558,6 +557,18 @@ public class Location implements Cloneable, ConfigurationSerializable {
         blockLoc.setZ(getBlockZ());
         return blockLoc;
     }
+
+    // Paper Start
+
+    /**
+     * @return The block key for this location's block location.
+     * @see Block#getBlockKey()
+     */
+    public long toBlockKey() {
+        return ((long)getBlockX() & 0x7FFFFFF) | (((long)getBlockZ() & 0x7FFFFFF) << 27) | ((long)getBlockY() << 54);
+    }
+    // Paper End
+
     /**
      * @return A new location where X/Y/Z are the center of the block
      */
