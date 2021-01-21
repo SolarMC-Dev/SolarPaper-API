@@ -49,7 +49,12 @@ import javax.annotation.Nonnull; // Paper
 
 /**
  * Represents the Bukkit core, for version and Server singleton handling
+ *
+ * @deprecated Don't use singletons. Using this class limits our possiblities
+ * e.g. should it ever be decided to create multiple instances of something
+ * which is somehow linked to a singleton.
  */
+@Deprecated
 public final class Bukkit {
     private static Server server;
 

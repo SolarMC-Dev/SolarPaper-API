@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -19,6 +20,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 @RunWith(Parameterized.class)
+@Ignore("org.bukkit.Bukkit is deprecated and poor practice")
 public class BukkitMirrorTest {
 
     @Parameters(name="{index}: {1}")
