@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.destroystokyo.paper.Title;
 import com.destroystokyo.paper.profile.PlayerProfile;
+import gg.solarmc.loader.SolarPlayer;
 import org.bukkit.Achievement;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
@@ -1985,4 +1986,14 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
     @Override
     Spigot spigot();
     // Spigot end
+
+    // Solar-Specific API. Keep this limited
+
+    /**
+     * Gets the corresponding SolarPlayer
+     *
+     * @return the solar player
+     */
+    SolarPlayer getSolarPlayer();
+
 }

@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import gg.solarmc.loader.DataCenter;
 import org.bukkit.Warning.WarningState;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
@@ -44,6 +45,7 @@ import org.bukkit.generator.ChunkGenerator;
 
 import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.meta.ItemMeta;
+import space.arim.omnibus.Omnibus;
 
 import javax.annotation.Nullable; // Paper
 import javax.annotation.Nonnull; // Paper
@@ -1082,4 +1084,21 @@ public interface Server extends PluginMessageRecipient {
      */
     com.destroystokyo.paper.profile.PlayerProfile createProfile(@Nullable UUID uuid, @Nullable String name);
     // Paper end
+
+    // Solar-Specific API. Keep this limited
+
+    /**
+     * Gets the data center, useful for starting transactions
+     *
+     * @return the data center
+     */
+    DataCenter getDataCenter();
+
+    /**
+     * Gets the {@link Omnibus} instance
+     *
+     * @return the omnibus
+     */
+    Omnibus getOmnibus();
+
 }
