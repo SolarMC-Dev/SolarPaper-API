@@ -5,7 +5,7 @@ import java.util.Date;
 
 import com.destroystokyo.paper.Title;
 import com.destroystokyo.paper.profile.PlayerProfile;
-import gg.solarmc.loader.SolarPlayer;
+import gg.solarmc.loader.OnlineSolarPlayer;
 import org.bukkit.Achievement;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
@@ -1992,8 +1992,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
     /**
      * Gets the corresponding SolarPlayer
      *
-     * @return the solar player
+     * @return the online solar player
      */
-    SolarPlayer getSolarPlayer();
+    OnlineSolarPlayer getSolarPlayer();
 
 }
