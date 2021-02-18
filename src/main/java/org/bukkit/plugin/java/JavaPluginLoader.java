@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,17 +18,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Server;
-import org.bukkit.Warning;
-import org.bukkit.Warning.WarningState;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.event.Event;
-import org.bukkit.event.EventException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.plugin.AuthorNagException;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.InvalidPluginException;
@@ -40,6 +34,7 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.TimedRegisteredListener;
 import org.bukkit.plugin.UnknownDependencyException;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.error.YAMLException;
 
 /**
@@ -267,22 +262,9 @@ public final class JavaPluginLoader implements PluginLoader {
             for (Class<?> clazz = eventClass; Event.class.isAssignableFrom(clazz); clazz = clazz.getSuperclass()) {
                 // This loop checks for extending deprecated events
                 if (clazz.getAnnotation(Deprecated.class) != null) {
-                    Warning warning = clazz.getAnnotation(Warning.class);
-                    WarningState warningState = server.getWarningState();
-                    if (!warningState.printFor(warning)) {
-                        break;
-                    }
-                    plugin.getLogger().log(
-                            Level.WARNING,
-                            String.format(
-                                    "\"%s\" has registered a listener for %s on method \"%s\", but the event is Deprecated." +
-                                    " \"%s\"; please notify the authors %s.",
-                                    plugin.getDescription().getFullName(),
-                                    clazz.getName(),
-                                    method.toGenericString(),
-                                    (warning != null && warning.reason().length() != 0) ? warning.reason() : "Server performance will be affected",
-                                    Arrays.toString(plugin.getDescription().getAuthors().toArray())),
-                            warningState == WarningState.ON ? new AuthorNagException(null) : null);
+                    LoggerFactory.getLogger(getClass()).warn(
+                            "Plugin {} has registered a listener {} for deprecated event {}",
+                            plugin, listener, clazz);
                     break;
                 }
             }
