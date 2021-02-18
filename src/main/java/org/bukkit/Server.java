@@ -3,6 +3,7 @@ package org.bukkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -1100,5 +1101,13 @@ public interface Server extends PluginMessageRecipient {
      * @return the omnibus
      */
     Omnibus getOmnibus();
+
+    /**
+     * Gets the configuration directory. This is the config directory typically used
+     * for SolarMC software.
+     *
+     * @return the config directory
+     */
+    Path getConfigDirectory();
 
 }
