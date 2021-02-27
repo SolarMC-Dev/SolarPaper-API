@@ -2,7 +2,8 @@ package org.bukkit.util;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -17,8 +18,6 @@ import org.bukkit.configuration.serialization.SerializableAs;
 @SerializableAs("Vector")
 public class Vector implements Cloneable, ConfigurationSerializable {
     private static final long serialVersionUID = -2657651106777219169L;
-
-    private static Random random = new Random();
 
     /**
      * Threshold for fuzzy equals().
@@ -664,6 +663,7 @@ public class Vector implements Cloneable, ConfigurationSerializable {
      * @return A random vector.
      */
     public static Vector getRandom() {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         return new Vector(random.nextDouble(), random.nextDouble(), random.nextDouble());
     }
 
