@@ -213,6 +213,7 @@ public final class JavaPluginLoader implements PluginLoader {
         } catch (NullPointerException ex) {
             // Boggle!
             // (Native methods throwing NPEs is not fun when you can't stop it before-hand)
+            throw ex; // Solar - there's no reason for an empty catch block
         }
     }
 
@@ -261,12 +262,14 @@ public final class JavaPluginLoader implements PluginLoader {
 
             for (Class<?> clazz = eventClass; Event.class.isAssignableFrom(clazz); clazz = clazz.getSuperclass()) {
                 // This loop checks for extending deprecated events
+                // Solar start - always warn on deprecation
                 if (clazz.getAnnotation(Deprecated.class) != null) {
                     LoggerFactory.getLogger(getClass()).warn(
                             "Plugin {} has registered a listener {} for deprecated event {}",
                             plugin, listener, clazz);
                     break;
                 }
+                // Solar end
             }
 
             EventExecutor executor = new co.aikar.timings.TimedEventExecutor(EventExecutor.create(method, eventClass), plugin, method, eventClass); // Spigot // Paper - Use factory method `EventExecutor.create()`
@@ -287,12 +290,15 @@ public final class JavaPluginLoader implements PluginLoader {
 
             JavaPlugin jPlugin = (JavaPlugin) plugin;
 
-            PluginClassLoader pluginLoader = (PluginClassLoader) jPlugin.getClassLoader();
+            // Solar start - make conditional upon ClassLoader being PluginClassLoader
+            if (jPlugin.getClassLoader() instanceof PluginClassLoader pluginLoader) {
 
             if (!loaders.contains(pluginLoader)) {
                 loaders.add(pluginLoader);
                 server.getLogger().log(Level.WARNING, "Enabled plugin with unregistered PluginClassLoader " + plugin.getDescription().getFullName());
             }
+            }
+            // Solar end
 
             try {
                 jPlugin.setEnabled(true);
