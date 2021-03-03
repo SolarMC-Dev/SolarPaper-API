@@ -21,8 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package co.aikar.timings;
+package co.aikar.timings.impl;
 
+import co.aikar.timings.Timing;
 import co.aikar.util.LoadingMap;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ final class TimingIdentifier {
     final TimingHandler groupHandler;
     private final int hashCode;
 
-    TimingIdentifier(String group, String name, Timing groupHandler) {
+    TimingIdentifier(String group, String name, InternalTiming groupHandler) {
         this.group = group != null ? group: DEFAULT_GROUP.name;
         this.name = name;
         this.groupHandler = groupHandler != null ? groupHandler.getTimingHandler() : null;

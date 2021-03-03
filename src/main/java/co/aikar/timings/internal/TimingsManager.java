@@ -21,8 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package co.aikar.timings;
+package co.aikar.timings.impl;
 
+import co.aikar.timings.Timing;
+import co.aikar.timings.Timings;
 import co.aikar.util.LoadingMap;
 import com.google.common.collect.EvictingQueue;
 import org.bukkit.Bukkit;
@@ -32,7 +34,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.PluginClassLoader;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,26 +44,26 @@ public final class TimingsManager {
         new ConcurrentHashMap<>(4096, .5F), TimingHandler::new
     );
     public static final FullServerTickHandler FULL_SERVER_TICK = new FullServerTickHandler();
-    public static final TimingHandler TIMINGS_TICK = Timings.ofSafe("Timings Tick", FULL_SERVER_TICK);
-    public static final Timing PLUGIN_GROUP_HANDLER = Timings.ofSafe("Plugins");
+    public static final TimingHandler TIMINGS_TICK = SafeTimings.ofSafe("Timings Tick", FULL_SERVER_TICK);
+    public static final Timing PLUGIN_GROUP_HANDLER = SafeTimings.ofSafe("Plugins");
     public static List<String> hiddenConfigs = new ArrayList<String>();
     public static boolean privacy = false;
 
     static final List<TimingHandler> HANDLERS = new ArrayList<>(1024);
     static final List<TimingHistory.MinuteReport> MINUTE_REPORTS = new ArrayList<>(64);
 
-    static EvictingQueue<TimingHistory> HISTORY = EvictingQueue.create(12);
+    public static final EvictingQueue<TimingHistory> HISTORY = EvictingQueue.create(12);
     static long timingStart = 0;
     static long historyStart = 0;
     static boolean needsFullReset = false;
-    static boolean needsRecheckEnabled = false;
+    public static boolean needsRecheckEnabled = false;
 
     private TimingsManager() {}
 
     /**
      * Resets all timing data on the next tick
      */
-    static void reset() {
+    public static void reset() {
         needsFullReset = true;
     }
 
@@ -71,7 +72,7 @@ public final class TimingsManager {
      * caused TPS loss.
      */
     static void tick() {
-        if (Timings.timingsEnabled) {
+        if (Timings.isTimingsEnabled()) {
             boolean violated = FULL_SERVER_TICK.isViolated();
 
             for (TimingHandler handler : HANDLERS) {
@@ -88,7 +89,7 @@ public final class TimingsManager {
         }
     }
     static void stopServer() {
-        Timings.timingsEnabled = false;
+        Timings.setTimingsEnabled(false);
         recheckEnabled();
     }
     static void recheckEnabled() {
@@ -128,7 +129,7 @@ public final class TimingsManager {
         historyStart = System.currentTimeMillis();
     }
 
-    static TimingHandler getHandler(String group, String name, Timing parent) {
+    public static TimingHandler getHandler(String group, String name, InternalTiming parent) {
         return TIMING_MAP.get(new TimingIdentifier(group, name, parent));
     }
 
@@ -156,10 +157,10 @@ public final class TimingsManager {
             plugin = getPluginByClassloader(command.getClass());
         }
         if (plugin == null) {
-            return Timings.ofSafe("Command: " + pluginName + ":" + command.getTimingName());
+            return SafeTimings.ofSafe("Command: " + pluginName + ":" + command.getTimingName());
         }
 
-        return Timings.ofSafe(plugin, "Command: " + pluginName + ":" + command.getTimingName());
+        return SafeTimings.ofSafe(plugin, "Command: " + pluginName + ":" + command.getTimingName());
     }
 
     /**

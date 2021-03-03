@@ -21,8 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package co.aikar.timings;
+package co.aikar.timings.impl;
 
+import co.aikar.timings.TimingsReportListener;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +36,9 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.EntityType;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import space.arim.omnibus.util.ThisClass;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,13 +49,13 @@ import java.lang.management.RuntimeMXBean;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.zip.GZIPOutputStream;
 
-import static co.aikar.timings.TimingsManager.HISTORY;
+import static co.aikar.timings.impl.TimingsManager.HISTORY;
 import static co.aikar.util.JSONUtil.appendObjectData;
 import static co.aikar.util.JSONUtil.createObject;
 import static co.aikar.util.JSONUtil.pair;
@@ -60,13 +64,15 @@ import static co.aikar.util.JSONUtil.toArrayMapper;
 import static co.aikar.util.JSONUtil.toObjectMapper;
 
 @SuppressWarnings({"rawtypes", "SuppressionAnnotation"})
-class TimingsExport extends Thread {
+public class TimingsExport extends Thread {
 
     private final TimingsReportListener listeners;
     private final Map out;
     private final TimingHistory[] history;
     private static long lastReport = 0;
-    final static List<CommandSender> requestingReport = Lists.newArrayList();
+    public final static List<CommandSender> requestingReport = Lists.newArrayList();
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThisClass.get());
 
     private TimingsExport(TimingsReportListener listeners, Map out, TimingHistory[] history) {
         super("Timings paste thread");
@@ -209,15 +215,15 @@ class TimingsExport extends Thread {
         new TimingsExport(listeners, parent, history).start();
     }
 
-    static long getCost() {
+    public static long getCost() {
         // Benchmark the users System.nanotime() for cost basis
         int passes = 100;
-        TimingHandler SAMPLER1 = Timings.ofSafe("Timings Sampler 1");
-        TimingHandler SAMPLER2 = Timings.ofSafe("Timings Sampler 2");
-        TimingHandler SAMPLER3 = Timings.ofSafe("Timings Sampler 3");
-        TimingHandler SAMPLER4 = Timings.ofSafe("Timings Sampler 4");
-        TimingHandler SAMPLER5 = Timings.ofSafe("Timings Sampler 5");
-        TimingHandler SAMPLER6 = Timings.ofSafe("Timings Sampler 6");
+        TimingHandler SAMPLER1 = SafeTimings.ofSafe("Timings Sampler 1");
+        TimingHandler SAMPLER2 = SafeTimings.ofSafe("Timings Sampler 2");
+        TimingHandler SAMPLER3 = SafeTimings.ofSafe("Timings Sampler 3");
+        TimingHandler SAMPLER4 = SafeTimings.ofSafe("Timings Sampler 4");
+        TimingHandler SAMPLER5 = SafeTimings.ofSafe("Timings Sampler 5");
+        TimingHandler SAMPLER6 = SafeTimings.ofSafe("Timings Sampler 6");
 
         long start = System.nanoTime();
         for (int i = 0; i < passes; i++) {
@@ -294,7 +300,7 @@ class TimingsExport extends Thread {
                 this.def.setLevel(7);
             }};
 
-            request.write(JSONValue.toJSONString(out).getBytes("UTF-8"));
+            request.write(JSONValue.toJSONString(out).getBytes(StandardCharsets.UTF_8));
             request.close();
 
             response = getResponse(con);
@@ -304,7 +310,7 @@ class TimingsExport extends Thread {
                     ChatColor.RED + "Upload Error: " + con.getResponseCode() + ": " + con.getResponseMessage());
                 listeners.sendMessage(ChatColor.RED + "Check your logs for more information");
                 if (response != null) {
-                    Bukkit.getLogger().log(Level.SEVERE, response);
+                    LOGGER.error(response);
                 }
                 return;
             }
@@ -313,40 +319,29 @@ class TimingsExport extends Thread {
             listeners.sendMessage(ChatColor.GREEN + "View Timings Report: " + timingsURL);
 
             if (response != null && !response.isEmpty()) {
-                Bukkit.getLogger().log(Level.INFO, "Timing Response: " + response);
+                LOGGER.info("Timing Response: {}", response);
             }
         } catch (IOException ex) {
             listeners.sendMessage(ChatColor.RED + "Error uploading timings, check your logs for more information");
             if (response != null) {
-                Bukkit.getLogger().log(Level.SEVERE, response);
+                LOGGER.error(response);
             }
-            Bukkit.getLogger().log(Level.SEVERE, "Could not paste timings", ex);
+            LOGGER.error("Could not paste timings", ex);
         } finally {
             this.listeners.done(timingsURL);
         }
     }
 
     private String getResponse(HttpURLConnection con) throws IOException {
-        InputStream is = null;
-        try {
-            is = con.getInputStream();
+        try (InputStream is = con.getInputStream()) {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-            byte[] b = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = is.read(b)) != -1) {
-                bos.write(b, 0, bytesRead);
-            }
+            is.transferTo(bos);
             return bos.toString();
 
         } catch (IOException ex) {
             listeners.sendMessage(ChatColor.RED + "Error uploading timings, check your logs for more information");
-            Bukkit.getLogger().log(Level.WARNING, con.getResponseMessage(), ex);
+            LOGGER.warn(con.getResponseMessage(), ex);
             return null;
-        } finally {
-            if (is != null) {
-                is.close();
-            }
         }
     }
 }
