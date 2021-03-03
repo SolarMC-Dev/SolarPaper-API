@@ -33,6 +33,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.internal.BridgePluginManager;
+import org.bukkit.plugin.internal.PluginHolder;
 import org.bukkit.util.FileUtil;
 
 import com.google.common.collect.ImmutableSet;
@@ -148,7 +150,7 @@ public sealed class SimplePluginManager implements PluginManager permits BridgeP
     }
 
     // Solar start - refactor this to support more than just plugins as File objects
-    <T> List<Plugin> sortPluginDependencies(Map<T, PluginDescriptionFile> pluginInfo, PluginHolder.ObjectToPlugin<T> toPlugin) {
+    protected <T> List<Plugin> sortPluginDependencies(Map<T, PluginDescriptionFile> pluginInfo, PluginHolder.ObjectToPlugin<T> toPlugin) {
         List<Plugin> result = new ArrayList<Plugin>();
 
         Map<String, T> plugins = new HashMap<>(); // Solar
@@ -353,7 +355,7 @@ public sealed class SimplePluginManager implements PluginManager permits BridgeP
     }
 
     // Solar start
-    synchronized void internalAddPlugin(Plugin plugin) {
+    protected synchronized void internalAddPlugin(Plugin plugin) {
         plugins.add(plugin);
         lookupNames.put(plugin.getDescription().getName().toLowerCase(java.util.Locale.ENGLISH), plugin);
     }

@@ -1,13 +1,18 @@
-package org.bukkit.plugin;
+package org.bukkit.plugin.internal;
 
 import org.bukkit.Server;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.plugin.InvalidPluginException;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginLoader;
+import org.bukkit.plugin.SimplePluginManager;
+import org.bukkit.plugin.UnknownDependencyException;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-@InternalApiDoNotUse
 public final class BridgePluginManager extends SimplePluginManager implements PluginHolder {
 
     private static final String NOT_SUPPORTED = "Unfortunately, this operation from PluginManager is not supported " +

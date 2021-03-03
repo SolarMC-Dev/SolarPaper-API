@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import com.destroystokyo.paper.event.executor.EventExecutorCreation;
+import com.destroystokyo.paper.event.executor.SafeClassDefiner;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Server;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -34,13 +37,15 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.TimedRegisteredListener;
 import org.bukkit.plugin.UnknownDependencyException;
+import org.bukkit.plugin.internal.AccessibleJavaPluginLoader;
+import org.bukkit.plugin.internal.EventExecutorFactory;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.error.YAMLException;
 
 /**
  * Represents a Java plugin loader, allowing plugins in the form of .jar
  */
-public final class JavaPluginLoader implements PluginLoader {
+public sealed class JavaPluginLoader implements PluginLoader permits AccessibleJavaPluginLoader { // Solar
     final Server server;
     private final Pattern[] fileFilters = new Pattern[] { Pattern.compile("\\.jar$"), };
     private final Map<String, Class<?>> classes = new java.util.concurrent.ConcurrentHashMap<String, Class<?>>(); // Spigot
@@ -217,7 +222,18 @@ public final class JavaPluginLoader implements PluginLoader {
         }
     }
 
+    // Solar start - add protected method
     public Map<Class<? extends Event>, Set<RegisteredListener>> createRegisteredListeners(Listener listener, final Plugin plugin) {
+        EventExecutorFactory factory = (plug, list, method, eventClass) -> {
+            EventExecutor asmExecutor = new EventExecutorCreation(list, method, eventClass, SafeClassDefiner.INSTANCE).create();
+            return new co.aikar.timings.TimedEventExecutor(asmExecutor, plug, method, eventClass);
+        };
+        return createRegisteredListeners(listener, plugin, factory);
+    }
+
+    protected Map<Class<? extends Event>, Set<RegisteredListener>> createRegisteredListeners(
+            final Listener listener, final Plugin plugin, EventExecutorFactory eventExecutorFactory) {
+    // Solar end
         Validate.notNull(plugin, "Plugin can not be null");
         Validate.notNull(listener, "Listener can not be null");
 
@@ -272,7 +288,11 @@ public final class JavaPluginLoader implements PluginLoader {
                 // Solar end
             }
 
-            EventExecutor executor = new co.aikar.timings.TimedEventExecutor(EventExecutor.create(method, eventClass), plugin, method, eventClass); // Spigot // Paper - Use factory method `EventExecutor.create()`
+            // Solar start - use EventExecutorFactory
+            EventExecutor executor = new co.aikar.timings.TimedEventExecutor(
+                    eventExecutorFactory.create(plugin, listener, method, eventClass),
+                    plugin, method, eventClass); // Spigot // Paper - Use factory method `EventExecutor.create()`
+            // Solar end
             if (false) { // Spigot - RL handles useTimings check now
                 eventSet.add(new TimedRegisteredListener(listener, executor, eh.priority(), plugin, eh.ignoreCancelled()));
             } else {
@@ -362,4 +382,15 @@ public final class JavaPluginLoader implements PluginLoader {
             }
         }
     }
+
+    // Solar start - JavaPlugin access
+    protected void initPlugin(JavaPlugin plugin, PluginLoader loader, Server server, PluginDescriptionFile description,
+                           Path dataFolder, Path file, ClassLoader classLoader) {
+        plugin.init(loader, server, description, dataFolder.toFile(), file.toFile(), classLoader);
+    }
+
+    protected void setJulLogger(JavaPlugin plugin, java.util.logging.Logger julLogger) {
+        plugin.logger = julLogger;
+    }
+    // Solar end
 }

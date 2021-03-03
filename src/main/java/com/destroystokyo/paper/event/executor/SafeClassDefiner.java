@@ -1,22 +1,22 @@
-package com.destroystokyo.paper.event.executor.asm;
+package com.destroystokyo.paper.event.executor;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.base.Preconditions;
 
 import com.google.common.collect.MapMaker;
-import org.objectweb.asm.Type;
 
-public class SafeClassDefiner implements ClassDefiner {
-    /* default */ static final SafeClassDefiner INSTANCE = new SafeClassDefiner();
+public final class SafeClassDefiner implements ClassDefiner {
+
+    public static final SafeClassDefiner INSTANCE = new SafeClassDefiner();
 
     private SafeClassDefiner() {}
 
     private final ConcurrentMap<ClassLoader, GeneratedClassLoader> loaders = new MapMaker().weakKeys().makeMap();
 
     @Override
-    public Class<?> defineClass(ClassLoader parentLoader, String name, byte[] data) {
+    public Class<?> defineClass(Class<?> listenerClass, String name, byte[] data) {
+        ClassLoader parentLoader = listenerClass.getClassLoader();
         GeneratedClassLoader loader = loaders.computeIfAbsent(parentLoader, GeneratedClassLoader::new);
         synchronized (loader.getClassLoadingLock(name)) {
             Preconditions.checkState(!loader.hasClass(name), "%s already defined", name);

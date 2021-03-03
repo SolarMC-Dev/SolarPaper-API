@@ -1,4 +1,4 @@
-package com.destroystokyo.paper.event.executor.asm;
+package com.destroystokyo.paper.event.executor;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicInteger;

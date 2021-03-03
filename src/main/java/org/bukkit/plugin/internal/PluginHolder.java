@@ -1,9 +1,12 @@
-package org.bukkit.plugin;
+package org.bukkit.plugin.internal;
+
+import org.bukkit.plugin.InvalidPluginException;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.util.List;
 import java.util.Map;
 
-@InternalApiDoNotUse
 public interface PluginHolder {
 
     void addPlugin(Plugin plugin);
