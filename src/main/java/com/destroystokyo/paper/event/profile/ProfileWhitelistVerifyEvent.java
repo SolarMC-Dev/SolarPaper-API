@@ -24,7 +24,6 @@
 package com.destroystokyo.paper.event.profile;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import com.mojang.authlib.GameProfile;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -63,15 +62,6 @@ public class ProfileWhitelistVerifyEvent extends Event {
      */
     public void setKickMessage(String kickMessage) {
         this.kickMessage = kickMessage;
-    }
-
-    /**
-     * @return the gameprofile of the player trying to connect
-     * @deprecated Will be removed in 1.13, use #{@link #getPlayerProfile()}
-     */
-    @Deprecated
-    public GameProfile getProfile() {
-        return profile.getGameProfile();
     }
 
     /**

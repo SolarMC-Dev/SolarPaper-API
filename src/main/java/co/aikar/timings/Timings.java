@@ -23,6 +23,12 @@
  */
 package co.aikar.timings;
 
+import co.aikar.timings.internal.InternalTiming;
+import co.aikar.timings.internal.NullTimingHandler;
+import co.aikar.timings.internal.SafeTimings;
+import co.aikar.timings.internal.TimingHistory;
+import co.aikar.timings.internal.TimingsExport;
+import co.aikar.timings.internal.TimingsManager;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.EvictingQueue;
 import org.apache.commons.lang.Validate;
@@ -55,7 +61,7 @@ public final class Timings {
     public static Timing of(Plugin plugin, String name) {
         Timing pluginHandler = null;
         if (plugin != null) {
-            pluginHandler = ofSafe(plugin.getName(), "Combined Total", TimingsManager.PLUGIN_GROUP_HANDLER);
+            pluginHandler = SafeTimings.ofSafe(plugin.getName(), "Combined Total", TimingsManager.PLUGIN_GROUP_HANDLER);
         }
         return of(plugin, name, pluginHandler);
     }
@@ -74,7 +80,7 @@ public final class Timings {
      */
     public static Timing of(Plugin plugin, String name, Timing groupHandler) {
         Preconditions.checkNotNull(plugin, "Plugin can not be null");
-        return TimingsManager.getHandler(plugin.getName(), name, groupHandler);
+        return TimingsManager.getHandler(plugin.getName(), name, (InternalTiming) groupHandler);
     }
 
     /**
@@ -255,30 +261,4 @@ public final class Timings {
         TimingsExport.requestingReport.add(sender);
     }
 
-    /*
-    =================
-    Protected API: These are for internal use only in Bukkit/CraftBukkit
-    These do not have isPrimaryThread() checks in the startTiming/stopTiming
-    =================
-    */
-
-    static TimingHandler ofSafe(String name) {
-        return ofSafe(null, name, null);
-    }
-
-    static Timing ofSafe(Plugin plugin, String name) {
-        Timing pluginHandler = null;
-        if (plugin != null) {
-            pluginHandler = ofSafe(plugin.getName(), "Combined Total", TimingsManager.PLUGIN_GROUP_HANDLER);
-        }
-        return ofSafe(plugin != null ? plugin.getName() : "Minecraft - Invalid Plugin", name, pluginHandler);
-    }
-
-    static TimingHandler ofSafe(String name, Timing groupHandler) {
-        return ofSafe(null, name, groupHandler);
-    }
-
-    static TimingHandler ofSafe(String groupName, String name, Timing groupHandler) {
-        return TimingsManager.getHandler(groupName, name, groupHandler);
-    }
 }

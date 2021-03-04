@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package co.aikar.timings.impl;
+package co.aikar.timings.internal;
 
 import co.aikar.timings.TimingsReportListener;
 import com.google.common.collect.Lists;
@@ -55,7 +55,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
-import static co.aikar.timings.impl.TimingsManager.HISTORY;
+import static co.aikar.timings.internal.TimingsManager.HISTORY;
 import static co.aikar.util.JSONUtil.appendObjectData;
 import static co.aikar.util.JSONUtil.createObject;
 import static co.aikar.util.JSONUtil.pair;

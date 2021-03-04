@@ -23,6 +23,7 @@
  */
 package co.aikar.timings;
 
+import co.aikar.timings.internal.SafeTimings;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
@@ -64,7 +65,7 @@ public class TimedEventExecutor implements EventExecutor {
 
         final String eventName = eventClass.getSimpleName();
         boolean verbose = "BlockPhysicsEvent".equals(eventName);
-        this.timings = Timings.ofSafe(plugin.getName(), (verbose ? "## " : "") +
+        this.timings = SafeTimings.ofSafe(plugin.getName(), (verbose ? "## " : "") +
             "Event: " + id + " (" + eventName + ")", null);
     }
 

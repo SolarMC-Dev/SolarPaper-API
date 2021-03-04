@@ -6,8 +6,7 @@ import org.bukkit.entity.LightningStrike;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityEvent;
-
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  *  Fired when lightning strikes an entity
@@ -18,7 +17,7 @@ public class EntityZapEvent extends EntityEvent implements Cancellable {
     private final LightningStrike bolt;
     private final Entity replacementEntity;
 
-    public EntityZapEvent(final Entity entity, @Nonnull final LightningStrike bolt, @Nonnull final Entity replacementEntity) {
+    public EntityZapEvent(final Entity entity, @NonNull final LightningStrike bolt, @NonNull final Entity replacementEntity) {
         super(entity);
         Validate.notNull(bolt);
         Validate.notNull(replacementEntity);
@@ -38,7 +37,7 @@ public class EntityZapEvent extends EntityEvent implements Cancellable {
      * Gets the lightning bolt that is striking the entity.
      * @return The lightning bolt responsible for this event
      */
-    @Nonnull
+    @NonNull
     public LightningStrike getBolt() {
         return bolt;
     }
@@ -47,7 +46,7 @@ public class EntityZapEvent extends EntityEvent implements Cancellable {
      * Gets the entity that will replace the struck entity.
      * @return The entity that will replace the struck entity
      */
-    @Nonnull
+    @NonNull
     public Entity getReplacementEntity() {
         return replacementEntity;
     }

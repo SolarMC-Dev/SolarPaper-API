@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package co.aikar.timings.impl;
+package co.aikar.timings.internal;
 
-import co.aikar.timings.impl.TimingHistory.RegionData.RegionId;
+import co.aikar.timings.internal.TimingHistory.RegionData.RegionId;
 import com.google.common.base.Function;
 import com.google.common.collect.Sets;
 import org.bukkit.Bukkit;
@@ -44,8 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static co.aikar.timings.impl.TimingsManager.FULL_SERVER_TICK;
-import static co.aikar.timings.impl.TimingsManager.MINUTE_REPORTS;
+import static co.aikar.timings.internal.TimingsManager.FULL_SERVER_TICK;
+import static co.aikar.timings.internal.TimingsManager.MINUTE_REPORTS;
 import static co.aikar.util.JSONUtil.*;
 
 @SuppressWarnings({"deprecation", "SuppressionAnnotation", "Convert2Lambda", "Anonymous2MethodRef"})

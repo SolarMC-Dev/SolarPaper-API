@@ -21,10 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package co.aikar.timings;
+package co.aikar.timings.internal;
 
-public final class NullTimingHandler implements Timing {
-    public static final Timing NULL = new NullTimingHandler();
+import co.aikar.timings.Timing;
+
+public final class NullTimingHandler implements InternalTiming {
 
     @Override
     public Timing startTiming() {

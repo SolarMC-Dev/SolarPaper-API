@@ -23,6 +23,8 @@
  */
 package co.aikar.timings;
 
+import co.aikar.timings.internal.TimingsExport;
+import co.aikar.timings.internal.TimingsManager;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;

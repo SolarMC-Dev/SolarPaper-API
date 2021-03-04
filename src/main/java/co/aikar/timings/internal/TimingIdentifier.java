@@ -21,9 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package co.aikar.timings.impl;
+package co.aikar.timings.internal;
 
-import co.aikar.timings.Timing;
 import co.aikar.util.LoadingMap;
 
 import java.util.ArrayList;

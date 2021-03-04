@@ -1,9 +1,8 @@
 package com.destroystokyo.paper.profile;
 
-import com.mojang.authlib.GameProfile;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -43,7 +42,7 @@ public interface PlayerProfile {
      * @return A Mutable set of this players properties, such as textures.
      * Values specified here are subject to implementation details.
      */
-    @Nonnull Set<ProfileProperty> getProperties();
+    @NonNull Set<ProfileProperty> getProperties();
 
     /**
      * Check if the Profile has the specified property
@@ -76,7 +75,7 @@ public interface PlayerProfile {
      * @param property The property to remove
      * @return If a property was removed
      */
-    default boolean removeProperty(@Nonnull ProfileProperty property) {
+    default boolean removeProperty(@NonNull ProfileProperty property) {
         return removeProperty(property.getName());
     }
 
@@ -142,10 +141,4 @@ public interface PlayerProfile {
         return hasProperty("textures");
     }
 
-    /**
-     * @deprecated Will be removed in 1.13
-     * @return the GameProfile for this PlayerProfile
-     */
-    @Deprecated
-    GameProfile getGameProfile();
 }

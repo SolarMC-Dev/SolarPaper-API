@@ -27,8 +27,8 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
@@ -58,7 +58,7 @@ public class PreFillProfileEvent extends Event {
      * @see PlayerProfile#setProperties(Collection)
      * @param properties The properties to set/append
      */
-    public void setProperties(@Nonnull Collection<ProfileProperty> properties) {
+    public void setProperties(@NonNull Collection<ProfileProperty> properties) {
         profile.setProperties(properties);
     }
 

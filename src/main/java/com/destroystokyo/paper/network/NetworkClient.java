@@ -1,8 +1,8 @@
 package com.destroystokyo.paper.network;
 
-import java.net.InetSocketAddress;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nullable;
+import java.net.InetSocketAddress;
 
 /**
  * Represents a client connected to the server.

@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.util.CachedServerIcon;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,22 +19,19 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
  * Extended version of {@link ServerListPingEvent} that allows full control
  * of the response sent to the client.
  */
 public class PaperServerListPingEvent extends ServerListPingEvent implements Cancellable {
 
-    @Nonnull private final StatusClient client;
+    @NonNull private final StatusClient client;
 
     private int numPlayers;
     private boolean hidePlayers;
-    @Nonnull private final List<PlayerProfile> playerSample = new ArrayList<>();
+    @NonNull private final List<PlayerProfile> playerSample = new ArrayList<>();
 
-    @Nonnull private String version;
+    @NonNull private String version;
     private int protocolVersion;
 
     @Nullable private CachedServerIcon favicon;
@@ -42,8 +41,8 @@ public class PaperServerListPingEvent extends ServerListPingEvent implements Can
     private boolean originalPlayerCount = true;
     private Object[] players;
 
-    public PaperServerListPingEvent(@Nonnull StatusClient client, String motd, int numPlayers, int maxPlayers,
-            @Nonnull String version, int protocolVersion, @Nullable CachedServerIcon favicon) {
+    public PaperServerListPingEvent(@NonNull StatusClient client, String motd, int numPlayers, int maxPlayers,
+            @NonNull String version, int protocolVersion, @Nullable CachedServerIcon favicon) {
         super(client.getAddress().getAddress(), motd, numPlayers, maxPlayers);
         this.client = client;
         this.numPlayers = numPlayers;
@@ -57,7 +56,7 @@ public class PaperServerListPingEvent extends ServerListPingEvent implements Can
      *
      * @return The client
      */
-    @Nonnull
+    @NonNull
     public StatusClient getClient() {
         return this.client;
     }
@@ -144,7 +143,7 @@ public class PaperServerListPingEvent extends ServerListPingEvent implements Can
      *
      * @return The mutable player sample list
      */
-    @Nonnull
+    @NonNull
     public List<PlayerProfile> getPlayerSample() {
         return this.playerSample;
     }
@@ -154,7 +153,7 @@ public class PaperServerListPingEvent extends ServerListPingEvent implements Can
      *
      * @return The server version
      */
-    @Nonnull
+    @NonNull
     public String getVersion() {
         return version;
     }
@@ -164,7 +163,7 @@ public class PaperServerListPingEvent extends ServerListPingEvent implements Can
      *
      * @param version The server version
      */
-    public void setVersion(@Nonnull String version) {
+    public void setVersion(@NonNull String version) {
         this.version = requireNonNull(version, "version");
     }
 
@@ -249,7 +248,7 @@ public class PaperServerListPingEvent extends ServerListPingEvent implements Can
      *     the removed player (based on their {@link UUID}).</li>
      * </ul>
      */
-    @Nonnull
+    @NonNull
     @Override
     public Iterator<Player> iterator() {
         if (this.players == null) {

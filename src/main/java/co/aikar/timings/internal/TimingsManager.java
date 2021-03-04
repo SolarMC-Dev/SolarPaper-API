@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package co.aikar.timings.impl;
+package co.aikar.timings.internal;
 
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
@@ -52,7 +52,7 @@ public final class TimingsManager {
     static final List<TimingHandler> HANDLERS = new ArrayList<>(1024);
     static final List<TimingHistory.MinuteReport> MINUTE_REPORTS = new ArrayList<>(64);
 
-    public static final EvictingQueue<TimingHistory> HISTORY = EvictingQueue.create(12);
+    public static EvictingQueue<TimingHistory> HISTORY = EvictingQueue.create(12);
     static long timingStart = 0;
     static long historyStart = 0;
     static boolean needsFullReset = false;

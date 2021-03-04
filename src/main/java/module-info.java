@@ -1,26 +1,33 @@
 module org.bukkit {
 
     // JDK dependencies
-    requires java.logging;
+    requires transitive java.logging; // Plugin#getLogger
+    requires java.management; // Timings retrieves some system information through platform mbeans
+    requires java.desktop; // org.bukkit.map.MapPalette needs it
 
     // Library dependencies
     // TODO: add all dependencies here
 
     requires transitive org.slf4j;
     requires transitive gg.solarmc.loader;
-    requires transitive bungeecord.chat; // TODO: add module name for bungee-chat
-    requires commons.lang; // TODO: migrate to commons 3
+    requires transitive org.spigotmc.bungee.api.chat;
+
     requires org.yaml.snakeyaml;
     requires org.objectweb.asm;
     requires org.objectweb.asm.commons;
-    requires guava; // TODO: migrate to newer guava
+    requires com.google.common;
+    requires com.google.gson;
+    requires it.unimi.dsi.fastutil;
+    requires org.checkerframework.checker.qual;
 
-    // TODO: export literally everything else
+    requires commons.lang; // TODO: migrate to commons 3
+    // TODO: drop this and replace with Gson
+    requires json.simple;
 
     // Export to everyone
 
     // co.aikar
-    exports co.aikar.timings; // TODO fix split package with SolarPaper-Server's co.aikar.timings
+    exports co.aikar.timings;
 
     // com.destroystokyo.paper
     exports com.destroystokyo.paper;
@@ -45,15 +52,52 @@ module org.bukkit {
     exports org.bukkit.block.structure;
     exports org.bukkit.boss;
     exports org.bukkit.command;
-    // Add more here...
+    exports org.bukkit.configuration;
+    exports org.bukkit.configuration.file;
+    exports org.bukkit.configuration.serialization;
+    exports org.bukkit.conversations;
+    exports org.bukkit.enchantments;
+    exports org.bukkit.entity;
+    exports org.bukkit.entity.minecart;
+    exports org.bukkit.event;
+    exports org.bukkit.event.block;
+    exports org.bukkit.event.command;
+    exports org.bukkit.event.enchantment;
+    exports org.bukkit.event.entity;
+    exports org.bukkit.event.hanging;
+    exports org.bukkit.event.inventory;
+    exports org.bukkit.event.player;
+    exports org.bukkit.event.server;
+    exports org.bukkit.event.vehicle;
+    exports org.bukkit.event.weather;
+    exports org.bukkit.event.world;
+    exports org.bukkit.generator;
+    exports org.bukkit.help;
+    exports org.bukkit.inventory;
+    exports org.bukkit.inventory.meta;
+    exports org.bukkit.map;
+    exports org.bukkit.material;
+    exports org.bukkit.material.types;
+    exports org.bukkit.metadata;
+    exports org.bukkit.permissions;
     exports org.bukkit.plugin;
     exports org.bukkit.plugin.java;
     exports org.bukkit.plugin.messaging;
+    exports org.bukkit.potion;
+    exports org.bukkit.projectiles;
+    exports org.bukkit.scheduler;
+    exports org.bukkit.scoreboard;
+    exports org.bukkit.util;
+    exports org.bukkit.util.io;
+    exports org.bukkit.util.noise;
+    exports org.bukkit.util.permissions;
 
+    // org.spigotmc
     exports org.spigotmc.event.entity;
     exports org.spigotmc.event.player;
 
     // Qualified exports to SolarPaper-Server
+    exports co.aikar.timings.internal to org.bukkit.craftbukkit;
     exports com.destroystokyo.paper.event.executor to org.bukkit.craftbukkit;
     exports com.destroystokyo.paper.utils to org.bukkit.craftbukkit;
     exports org.bukkit.plugin.internal to org.bukkit.craftbukkit;

@@ -12,17 +12,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.Nullable;
 import org.bukkit.Bukkit;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum VersionHistoryManager {
     INSTANCE;
 
     private final Gson gson = new Gson();
 
-    private final Logger logger = Bukkit.getLogger();
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     private VersionData currentData = null;
 
@@ -33,9 +33,9 @@ public enum VersionHistoryManager {
             // Basic file santiy checks
             if (!Files.isRegularFile(path)) {
                 if (Files.isDirectory(path)) {
-                    logger.severe(path + " is a directory, cannot be used for version history");
+                    LOGGER.error("{} is a directory, cannot be used for version history", path);
                 } else {
-                    logger.severe(path + " is not a regular file, cannot be used for version history");
+                    LOGGER.error("{} is not a regular file, cannot be used for version history", path);
                 }
                 // We can't continue
                 return;
@@ -44,16 +44,16 @@ public enum VersionHistoryManager {
             try (final BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
                 currentData = gson.fromJson(reader, VersionData.class);
             } catch (final IOException e) {
-                logger.log(Level.SEVERE, "Failed to read version history file '" + path + "'", e);
+                LOGGER.error("Failed to read version history file '{}'", path, e);
                 return;
             } catch (final JsonSyntaxException e) {
-                logger.log(Level.SEVERE, "Invalid json syntax for file '" + path + "'", e);
+                LOGGER.error("Invalid json syntax for file '{}'", path, e);
                 return;
             }
 
             final String version = Bukkit.getVersion();
             if (version == null) {
-                logger.severe("Failed to retrieve current version");
+                LOGGER.error("Failed to retrieve current version");
                 return;
             }
 
@@ -82,7 +82,7 @@ public enum VersionHistoryManager {
         )) {
             gson.toJson(currentData, writer);
         } catch (final IOException e) {
-            logger.log(Level.SEVERE, "Failed to write to version history file", e);
+            LOGGER.error("Failed to write to version history file", e);
         }
     }
 

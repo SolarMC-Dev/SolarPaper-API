@@ -1,10 +1,10 @@
 package org.bukkit.command;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import co.aikar.timings.internal.TimingsManager;
 import org.bukkit.Bukkit;
 
 public class FormattedCommandAlias extends Command {
@@ -12,7 +12,7 @@ public class FormattedCommandAlias extends Command {
 
     public FormattedCommandAlias(String alias, String[] formatStrings) {
         super(alias);
-        timings = co.aikar.timings.TimingsManager.getCommandTiming("minecraft", this); // Spigot
+        timings = TimingsManager.getCommandTiming("minecraft", this); // Spigot
         this.formatStrings = formatStrings;
     }
 

@@ -1,9 +1,9 @@
-package co.aikar.timings.impl;
+package co.aikar.timings.internal;
 
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 
-import static co.aikar.timings.impl.TimingsManager.*;
+import static co.aikar.timings.internal.TimingsManager.*;
 
 public class FullServerTickHandler extends TimingHandler {
     private static final TimingIdentifier IDENTITY = new TimingIdentifier("Minecraft", "Full Server Tick", null);
