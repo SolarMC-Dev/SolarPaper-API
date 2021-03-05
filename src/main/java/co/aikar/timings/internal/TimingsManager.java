@@ -88,7 +88,7 @@ public final class TimingsManager {
             // Generate TPS/Ping/Tick reports every minute
         }
     }
-    static void stopServer() {
+    public static void stopServer() {
         Timings.setTimingsEnabled(false);
         recheckEnabled();
     }
