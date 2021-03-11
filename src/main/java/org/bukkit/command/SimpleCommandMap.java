@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import co.aikar.timings.Timing;
+import co.aikar.timings.internal.TimingsManager;
 import com.destroystokyo.paper.event.server.ServerExceptionEvent;
 import com.destroystokyo.paper.exception.ServerCommandException;
 import com.destroystokyo.paper.exception.ServerTabCompleteException;
@@ -64,7 +65,7 @@ public class SimpleCommandMap implements CommandMap {
      * {@inheritDoc}
      */
     public boolean register(String label, String fallbackPrefix, Command command) {
-        command.timings = co.aikar.timings.TimingsManager.getCommandTiming(fallbackPrefix, command); // Spigot
+        command.timings = TimingsManager.getCommandTiming(fallbackPrefix, command); // Spigot
         label = label.toLowerCase(java.util.Locale.ENGLISH).trim();
         fallbackPrefix = fallbackPrefix.toLowerCase(java.util.Locale.ENGLISH).trim();
         boolean registered = register(label, command, false, fallbackPrefix);
@@ -142,7 +143,7 @@ public class SimpleCommandMap implements CommandMap {
 
         // Paper start - Plugins do weird things to workaround normal registration
         if (target.timings == null) {
-            target.timings = co.aikar.timings.TimingsManager.getCommandTiming(null, target);
+            target.timings = TimingsManager.getCommandTiming(null, target);
         }
         // Paper end
 

@@ -27,8 +27,8 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**
@@ -37,7 +37,7 @@ import java.util.Set;
 public class FillProfileEvent extends Event {
     private final PlayerProfile profile;
 
-    public FillProfileEvent(@Nonnull PlayerProfile profile) {
+    public FillProfileEvent(@NonNull PlayerProfile profile) {
         super(!org.bukkit.Bukkit.isPrimaryThread());
         this.profile = profile;
     }
@@ -45,7 +45,7 @@ public class FillProfileEvent extends Event {
     /**
      * @return The Profile that had properties filled
      */
-    @Nonnull
+    @NonNull
     public PlayerProfile getPlayerProfile() {
         return profile;
     }

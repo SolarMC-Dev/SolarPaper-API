@@ -3,8 +3,7 @@ package org.bukkit.event.player;
 import org.bukkit.entity.Entity; // Paper
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-
-import javax.annotation.Nullable; // Paper
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Called when a players experience changes naturally

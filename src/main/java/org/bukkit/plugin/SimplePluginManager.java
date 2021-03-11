@@ -33,6 +33,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.internal.BridgePluginManager;
+import org.bukkit.plugin.internal.PluginHolder;
 import org.bukkit.util.FileUtil;
 
 import com.google.common.collect.ImmutableSet;
@@ -40,7 +42,7 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Handles all plugin management from the Server
  */
-public final class SimplePluginManager implements PluginManager {
+public sealed class SimplePluginManager implements PluginManager permits BridgePluginManager { // Solar
     private final Server server;
     private final Map<Pattern, PluginLoader> fileAssociations = new HashMap<Pattern, PluginLoader>();
     private final List<Plugin> plugins = new ArrayList<Plugin>();
@@ -114,11 +116,7 @@ public final class SimplePluginManager implements PluginManager {
             updateDirectory = new File(directory, server.getUpdateFolder());
         }
 
-        Map<String, File> plugins = new HashMap<String, File>();
-        Set<String> loadedPlugins = new HashSet<String>();
-        Map<String, Collection<String>> dependencies = new HashMap<String, Collection<String>>();
-        Map<String, Collection<String>> softDependencies = new HashMap<String, Collection<String>>();
-
+        Map<File, PluginDescriptionFile> pluginFiles = new LinkedHashMap<>(); // Solar
         // This is where it figures out all possible plugins
         for (File file : directory.listFiles()) {
             PluginLoader loader = null;
@@ -146,17 +144,34 @@ public final class SimplePluginManager implements PluginManager {
                 server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + directory.getPath() + "'", ex);
                 continue;
             }
+            pluginFiles.put(file, description); // Solar
+        }
+        return sortPluginDependencies(pluginFiles, this::loadPlugin).toArray(Plugin[]::new); // Solar - use generic method
+    }
 
-            File replacedFile = plugins.put(description.getName(), file);
+    // Solar start - refactor this to support more than just plugins as File objects
+    protected <T> List<Plugin> sortPluginDependencies(Map<T, PluginDescriptionFile> pluginInfo, PluginHolder.ObjectToPlugin<T> toPlugin) {
+        List<Plugin> result = new ArrayList<Plugin>();
+
+        Map<String, T> plugins = new HashMap<>(); // Solar
+        Set<String> loadedPlugins = new HashSet<String>();
+        Map<String, Collection<String>> dependencies = new HashMap<String, Collection<String>>();
+        Map<String, Collection<String>> softDependencies = new HashMap<String, Collection<String>>();
+
+        for (Map.Entry<T, PluginDescriptionFile> fileAndDescription : pluginInfo.entrySet()) {
+            T file = fileAndDescription.getKey();
+            PluginDescriptionFile description = fileAndDescription.getValue();
+
+            T replacedFile = plugins.putIfAbsent(description.getName(), file);
             if (replacedFile != null) {
                 server.getLogger().severe(String.format(
-                    "Ambiguous plugin name `%s' for files `%s' and `%s' in `%s'",
-                    description.getName(),
-                    file.getPath(),
-                    replacedFile.getPath(),
-                    directory.getPath()
+                        "Ambiguous plugin name %s for %s and %s",
+                        description.getName(),
+                        file,
+                        replacedFile
                 ));
             }
+    // Solar end
 
             Collection<String> softDependencySet = description.getSoftDepend();
             if (softDependencySet != null && !softDependencySet.isEmpty()) {
@@ -190,10 +205,10 @@ public final class SimplePluginManager implements PluginManager {
 
         while (!plugins.isEmpty()) {
             boolean missingDependency = true;
-            Iterator<Map.Entry<String, File>> pluginIterator = plugins.entrySet().iterator();
+            Iterator<Map.Entry<String, T>> pluginIterator = plugins.entrySet().iterator(); // Solar
 
             while (pluginIterator.hasNext()) {
-                Map.Entry<String, File> entry = pluginIterator.next();
+                Map.Entry<String, T> entry = pluginIterator.next(); // Solar
                 String plugin = entry.getKey();
 
                 if (dependencies.containsKey(plugin)) {
@@ -213,10 +228,12 @@ public final class SimplePluginManager implements PluginManager {
                             softDependencies.remove(plugin);
                             dependencies.remove(plugin);
 
+                            // Solar start
                             server.getLogger().log(
-                                Level.SEVERE,
-                                "Could not load '" + entry.getValue().getPath() + "' in folder '" + directory.getPath() + "'",
-                                new UnknownDependencyException(dependency));
+                                    Level.SEVERE,
+                                    "Could not load '" + entry.getValue() + " due to missing dependency",
+                                    new UnknownDependencyException(dependency));
+                            // Solar end
                             break;
                         }
                     }
@@ -243,16 +260,16 @@ public final class SimplePluginManager implements PluginManager {
                 }
                 if (!(dependencies.containsKey(plugin) || softDependencies.containsKey(plugin)) && plugins.containsKey(plugin)) {
                     // We're clear to load, no more soft or hard dependencies left
-                    File file = plugins.get(plugin);
+                    T file = plugins.get(plugin); // Solar
                     pluginIterator.remove();
                     missingDependency = false;
 
                     try {
-                        result.add(loadPlugin(file));
+                        result.add(toPlugin.toPlugin(file)); // Solar
                         loadedPlugins.add(plugin);
                         continue;
                     } catch (InvalidPluginException ex) {
-                        server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + directory.getPath() + "'", ex);
+                        server.getLogger().log(Level.SEVERE, "Could not load '" + file, ex); // Solar
                     }
                 }
             }
@@ -263,21 +280,21 @@ public final class SimplePluginManager implements PluginManager {
                 pluginIterator = plugins.entrySet().iterator();
 
                 while (pluginIterator.hasNext()) {
-                    Map.Entry<String, File> entry = pluginIterator.next();
+                    Map.Entry<String, T> entry = pluginIterator.next(); // Solar
                     String plugin = entry.getKey();
 
                     if (!dependencies.containsKey(plugin)) {
                         softDependencies.remove(plugin);
                         missingDependency = false;
-                        File file = entry.getValue();
+                        T file = entry.getValue(); // Solar
                         pluginIterator.remove();
 
                         try {
-                            result.add(loadPlugin(file));
+                            result.add(toPlugin.toPlugin(file)); // Solar
                             loadedPlugins.add(plugin);
-                            break;
+                            continue;
                         } catch (InvalidPluginException ex) {
-                            server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + directory.getPath() + "'", ex);
+                            server.getLogger().log(Level.SEVERE, "Could not load '" + file, ex); // Solar
                         }
                     }
                 }
@@ -285,18 +302,17 @@ public final class SimplePluginManager implements PluginManager {
                 if (missingDependency) {
                     softDependencies.clear();
                     dependencies.clear();
-                    Iterator<File> failedPluginIterator = plugins.values().iterator();
+                    Iterator<T> failedPluginIterator = plugins.values().iterator(); // Solar
 
                     while (failedPluginIterator.hasNext()) {
-                        File file = failedPluginIterator.next();
+                        T file = failedPluginIterator.next(); // Solar
                         failedPluginIterator.remove();
-                        server.getLogger().log(Level.SEVERE, "Could not load '" + file.getPath() + "' in folder '" + directory.getPath() + "': circular dependency detected");
+                        server.getLogger().log(Level.SEVERE, "Could not load '" + file + ". circular dependency detected"); // Solar
                     }
                 }
             }
         }
-
-        return result.toArray(new Plugin[result.size()]);
+        return result; // Solar
     }
 
     /**
@@ -337,6 +353,13 @@ public final class SimplePluginManager implements PluginManager {
 
         return result;
     }
+
+    // Solar start
+    protected synchronized void internalAddPlugin(Plugin plugin) {
+        plugins.add(plugin);
+        lookupNames.put(plugin.getDescription().getName().toLowerCase(java.util.Locale.ENGLISH), plugin);
+    }
+    // Solar end
 
     private void checkUpdate(File file) {
         if (updateDirectory == null || !updateDirectory.isDirectory()) {

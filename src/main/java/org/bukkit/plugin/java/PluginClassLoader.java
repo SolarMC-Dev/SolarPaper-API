@@ -4,12 +4,12 @@ import com.google.common.io.ByteStreams;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.CodeSigner;
 import java.security.CodeSource;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -41,24 +41,7 @@ public final class PluginClassLoader extends URLClassLoader { // Spigot
     // Spigot Start
     static
     {
-        try
-        {
-            java.lang.reflect.Method method = ClassLoader.class.getDeclaredMethod( "registerAsParallelCapable" );
-            if ( method != null )
-            {
-                boolean oldAccessible = method.isAccessible();
-                method.setAccessible( true );
-                method.invoke( null );
-                method.setAccessible( oldAccessible );
-                org.bukkit.Bukkit.getLogger().log( java.util.logging.Level.INFO, "Set PluginClassLoader as parallel capable" );
-            }
-        } catch ( NoSuchMethodException ex )
-        {
-            // Ignore
-        } catch ( Exception ex )
-        {
-            org.bukkit.Bukkit.getLogger().log( java.util.logging.Level.WARNING, "Error setting PluginClassLoader as parallel capable", ex );
-        }
+        ClassLoader.registerAsParallelCapable(); // Solar - drop JDK 6 compatibility
     }
     // Spigot End
 
@@ -91,12 +74,21 @@ public final class PluginClassLoader extends URLClassLoader { // Spigot
                 throw new InvalidPluginException("main class `" + description.getMain() + "' does not extend JavaPlugin", ex);
             }
 
-            plugin = pluginClass.newInstance();
-        } catch (IllegalAccessException ex) {
+        // Solar start - do this better
+            if (pluginClass.getClassLoader() != this) {
+                throw new IllegalStateException("JavaPlugin must be loaded through its own PluginClassLoader");
+            }
+            plugin = pluginClass.getDeclaredConstructor().newInstance();
+
+            initialize(plugin);
+        } catch (IllegalAccessException | NoSuchMethodException ex) {
             throw new InvalidPluginException("No public constructor", ex);
         } catch (InstantiationException ex) {
             throw new InvalidPluginException("Abnormal plugin type", ex);
+        } catch (InvocationTargetException ex) {
+            throw new InvalidPluginException("Exception thrown from constructor", ex);
         }
+        // Solar end
     }
 
     @Override

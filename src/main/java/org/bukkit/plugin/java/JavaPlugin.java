@@ -53,11 +53,15 @@ public abstract class JavaPlugin extends PluginBase {
     Logger logger = null; // Paper - PluginLogger -> Logger, package-private
 
     public JavaPlugin() {
+        // Solar start - moved to PluginClassLoader
+        /*
         final ClassLoader classLoader = this.getClass().getClassLoader();
         if (!(classLoader instanceof PluginClassLoader)) {
             throw new IllegalStateException("JavaPlugin requires " + PluginClassLoader.class.getName());
         }
         ((PluginClassLoader) classLoader).initialize(this);
+        */
+        // Solar end
     }
 
     protected JavaPlugin(final JavaPluginLoader loader, final PluginDescriptionFile description, final File dataFolder, final File file) {
@@ -382,6 +386,12 @@ public abstract class JavaPlugin extends PluginBase {
      */
     public static <T extends JavaPlugin> T getPlugin(Class<T> clazz) {
         Validate.notNull(clazz, "Null class cannot have a plugin");
+        // Solar start - unsupported
+        if (true) {
+            throw new UnsupportedOperationException("Unable to perform this operation. " +
+                    "Code your plugin better - you shouldn't be using this method for global access anyway");
+        }
+        // Solar end
         if (!JavaPlugin.class.isAssignableFrom(clazz)) {
             throw new IllegalArgumentException(clazz + " does not extend " + JavaPlugin.class);
         }
@@ -410,6 +420,12 @@ public abstract class JavaPlugin extends PluginBase {
      */
     public static JavaPlugin getProvidingPlugin(Class<?> clazz) {
         Validate.notNull(clazz, "Null class cannot have a plugin");
+        // Solar start - unsupported
+        if (true) {
+            throw new UnsupportedOperationException("Unfortunately this operation cannot be performed. " +
+                    "Please analyze namespaces to determine which class belongs to which plugin.");
+        }
+        // Solar end
         final ClassLoader cl = clazz.getClassLoader();
         if (!(cl instanceof PluginClassLoader)) {
             throw new IllegalArgumentException(clazz + " is not provided by " + PluginClassLoader.class);

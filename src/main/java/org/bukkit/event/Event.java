@@ -12,7 +12,6 @@ import org.bukkit.plugin.PluginManager;
  * @see PluginManager#registerEvents(Listener,Plugin)
  */
 public abstract class Event {
-    private String name;
     private final boolean async;
 
     /**
@@ -58,10 +57,7 @@ public abstract class Event {
      * @return name of this event
      */
     public String getEventName() {
-        if (name == null) {
-            name = getClass().getSimpleName();
-        }
-        return name;
+        return getClass().getSimpleName(); // Solar - remove extra field
     }
 
     public abstract HandlerList getHandlers();

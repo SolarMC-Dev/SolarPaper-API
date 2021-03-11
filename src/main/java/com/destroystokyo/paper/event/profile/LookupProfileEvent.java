@@ -1,12 +1,10 @@
 package com.destroystokyo.paper.event.profile;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import com.mojang.authlib.GameProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
-import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Allows a plugin to be notified anytime AFTER a Profile has been looked up from the Mojang API
@@ -21,25 +19,15 @@ public class LookupProfileEvent extends Event {
 
     private final PlayerProfile profile;
 
-    public LookupProfileEvent(@Nonnull PlayerProfile profile) {
+    public LookupProfileEvent(@NonNull PlayerProfile profile) {
         super(!Bukkit.isPrimaryThread());
         this.profile = profile;
     }
 
     /**
      * @return The profile that was recently looked up. This profile can be mutated
-     * @deprecated will be removed with 1.13, use {@link #getPlayerProfile()}
      */
-    @Deprecated
-    @Nonnull
-    public GameProfile getProfile() {
-        return profile.getGameProfile();
-    }
-
-    /**
-     * @return The profile that was recently looked up. This profile can be mutated
-     */
-    @Nonnull
+    @NonNull
     public PlayerProfile getPlayerProfile() {
         return profile;
     }

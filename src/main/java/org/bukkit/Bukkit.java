@@ -43,9 +43,8 @@ import org.bukkit.generator.ChunkGenerator;
 
 import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import javax.annotation.Nullable; // Paper
-import javax.annotation.Nonnull; // Paper
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents the Bukkit core, for version and Server singleton handling
@@ -1244,7 +1243,7 @@ public final class Bukkit {
      * @param uuid UUID to create profile for
      * @return A PlayerProfile object
      */
-    public static com.destroystokyo.paper.profile.PlayerProfile createProfile(@Nonnull UUID uuid) {
+    public static com.destroystokyo.paper.profile.PlayerProfile createProfile(@NonNull UUID uuid) {
         return server.createProfile(uuid);
     }
 
@@ -1253,7 +1252,7 @@ public final class Bukkit {
      * @param name Name to create profile for
      * @return A PlayerProfile object
      */
-    public static com.destroystokyo.paper.profile.PlayerProfile createProfile(@Nonnull String name) {
+    public static com.destroystokyo.paper.profile.PlayerProfile createProfile(@NonNull String name) {
         return server.createProfile(name);
     }
 

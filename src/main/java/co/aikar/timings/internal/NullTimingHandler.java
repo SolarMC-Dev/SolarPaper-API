@@ -21,31 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package co.aikar.timings;
+package co.aikar.timings.internal;
 
-import org.bukkit.Bukkit;
+import co.aikar.timings.Timing;
 
-class UnsafeTimingHandler extends TimingHandler {
-
-    UnsafeTimingHandler(TimingIdentifier id) {
-        super(id);
-    }
-
-    private static void checkThread() {
-        if (!Bukkit.isPrimaryThread()) {
-            throw new IllegalStateException("Calling Timings from Async Operation");
-        }
-    }
+public final class NullTimingHandler implements InternalTiming {
 
     @Override
     public Timing startTiming() {
-        checkThread();
-        return super.startTiming();
+        return this;
     }
 
     @Override
     public void stopTiming() {
-        checkThread();
-        super.stopTiming();
+
+    }
+
+    @Override
+    public Timing startTimingIfSync() {
+        return this;
+    }
+
+    @Override
+    public void stopTimingIfSync() {
+
+    }
+
+    @Override
+    public void abort() {
+
+    }
+
+    @Override
+    public TimingHandler getTimingHandler() {
+        return null;
+    }
+
+    @Override
+    public void close() {
+
     }
 }

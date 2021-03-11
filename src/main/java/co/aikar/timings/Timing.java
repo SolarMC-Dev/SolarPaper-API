@@ -65,13 +65,6 @@ public interface Timing extends AutoCloseable {
     @Deprecated
     void abort();
 
-    /**
-     * Used internally to get the actual backing Handler in the case of delegated Handlers
-     *
-     * @return TimingHandler
-     */
-    TimingHandler getTimingHandler();
-
     @Override
     void close();
 }

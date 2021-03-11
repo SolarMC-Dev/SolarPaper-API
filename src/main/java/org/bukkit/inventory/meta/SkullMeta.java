@@ -3,8 +3,7 @@ package org.bukkit.inventory.meta;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents a skull ({@link Material#SKULL_ITEM}) that can have an owner.

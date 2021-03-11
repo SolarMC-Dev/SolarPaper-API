@@ -1,16 +1,12 @@
 package com.destroystokyo.paper.event.profile;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -32,7 +28,7 @@ public class PreLookupProfileEvent extends Event {
     private UUID uuid;
     private Set<ProfileProperty> properties = new HashSet<>();
 
-    public PreLookupProfileEvent(@Nonnull String name) {
+    public PreLookupProfileEvent(@NonNull String name) {
         super(!Bukkit.isPrimaryThread());
         this.name = name;
     }
@@ -40,7 +36,7 @@ public class PreLookupProfileEvent extends Event {
     /**
      * @return Name of the profile
      */
-    @Nonnull
+    @NonNull
     public String getName() {
         return name;
     }
@@ -66,48 +62,6 @@ public class PreLookupProfileEvent extends Event {
      */
     public void setUUID(@Nullable UUID uuid) {
         this.uuid = uuid;
-    }
-
-    /**
-     * Get the properties for this profile
-     *
-     * @return the property map to attach to the new {@link PlayerProfile}
-     * @deprecated will be removed with 1.13  Use {@link #getProfileProperties()}
-     */
-    @Deprecated
-    @Nonnull
-    public Multimap<String, Property> getProperties() {
-        Multimap<String, Property> props = ArrayListMultimap.create();
-
-        for (ProfileProperty property : properties) {
-            props.put(property.getName(), new Property(property.getName(), property.getValue(), property.getSignature()));
-        }
-        return props;
-    }
-
-    /**
-     * Completely replaces all Properties with the new provided properties
-     * @param properties the properties to set on the new profile
-     * @deprecated will be removed with 1.13 Use {@link #setProfileProperties(Set)}
-     */
-    @Deprecated
-    public void setProperties(Multimap<String, Property> properties) {
-        this.properties = new HashSet<>();
-        properties.values().forEach(property -> {
-            this.properties.add(new ProfileProperty(property.getName(), property.getValue(), property.getSignature()));
-        });
-    }
-
-    /**
-     * Adds additional properties, without removing the original properties
-     * @param properties the properties to add to the existing properties
-     * @deprecated will be removed with 1.13 use {@link #addProfileProperties(Set)}
-     */
-    @Deprecated
-    public void addProperties(Multimap<String, Property> properties) {
-        properties.values().forEach(property -> {
-            this.properties.add(new ProfileProperty(property.getName(), property.getValue(), property.getSignature()));
-        });
     }
 
     /**

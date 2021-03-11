@@ -21,8 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package co.aikar.timings;
+package co.aikar.timings.internal;
 
+import co.aikar.timings.Timing;
+import co.aikar.timings.Timings;
 import co.aikar.util.LoadingIntMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
@@ -34,9 +36,9 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 
-class TimingHandler implements Timing {
+class TimingHandler implements InternalTiming {
 
-    private static AtomicInteger idPool = new AtomicInteger(1);
+    private static final AtomicInteger idPool = new AtomicInteger(1);
     static Deque<TimingHandler> TIMING_STACK = new ArrayDeque<>();
     final int id = idPool.getAndIncrement();
 
@@ -65,7 +67,7 @@ class TimingHandler implements Timing {
     }
 
     final void checkEnabled() {
-        enabled = Timings.timingsEnabled && (!verbose || Timings.verboseEnabled);
+        enabled = Timings.isTimingsEnabled() && (!verbose || Timings.isVerboseTimingsEnabled());
     }
 
     void processTick(boolean violated) {

@@ -1,9 +1,9 @@
 package com.destroystokyo.paper.profile;
 
 import com.google.common.base.Preconditions;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -14,11 +14,11 @@ public class ProfileProperty {
     private final String value;
     private final String signature;
 
-    public ProfileProperty(@Nonnull String name, @Nonnull String value) {
+    public ProfileProperty(@NonNull String name, @NonNull String value) {
         this(name, value, null);
     }
 
-    public ProfileProperty(@Nonnull String name, @Nonnull String value, @Nullable String signature) {
+    public ProfileProperty(@NonNull String name, @NonNull String value, @Nullable String signature) {
         this.name = Preconditions.checkNotNull(name, "ProfileProperty name can not be null");
         this.value = Preconditions.checkNotNull(value, "ProfileProperty value can not be null");
         this.signature = signature;
@@ -27,7 +27,7 @@ public class ProfileProperty {
     /**
      * @return The property name, ie "textures"
      */
-    @Nonnull
+    @NonNull
     public String getName() {
         return name;
     }
@@ -35,7 +35,7 @@ public class ProfileProperty {
     /**
      * @return The property value, likely to be base64 encoded
      */
-    @Nonnull
+    @NonNull
     public String getValue() {
         return value;
     }
@@ -67,6 +67,6 @@ public class ProfileProperty {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hashCode(name);
     }
 }

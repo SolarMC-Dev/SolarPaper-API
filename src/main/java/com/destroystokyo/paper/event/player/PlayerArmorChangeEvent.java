@@ -5,12 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.bukkit.Material.*;
@@ -39,7 +36,7 @@ public class PlayerArmorChangeEvent extends PlayerEvent {
      *
      * @return type of slot being altered
      */
-    @Nonnull
+    @NonNull
     public SlotType getSlotType() {
         return this.slotType;
     }
@@ -84,11 +81,10 @@ public class PlayerArmorChangeEvent extends PlayerEvent {
         LEGS(DIAMOND_LEGGINGS, GOLD_LEGGINGS, IRON_LEGGINGS, CHAINMAIL_LEGGINGS, LEATHER_LEGGINGS),
         FEET(DIAMOND_BOOTS, GOLD_BOOTS, IRON_BOOTS, CHAINMAIL_BOOTS, LEATHER_BOOTS);
 
-        private final Set<Material> mutableTypes = new HashSet<>();
-        private Set<Material> immutableTypes;
+        private final Set<Material> types;
 
         SlotType(Material... types) {
-            this.mutableTypes.addAll(Arrays.asList(types));
+            this.types = Set.of(types);
         }
 
         /**
@@ -97,13 +93,9 @@ public class PlayerArmorChangeEvent extends PlayerEvent {
          *
          * @return immutable set of material types
          */
-        @Nonnull
+        @NonNull
         public Set<Material> getTypes() {
-            if (immutableTypes == null) {
-                immutableTypes = Collections.unmodifiableSet(mutableTypes);
-            }
-
-            return immutableTypes;
+            return types;
         }
 
         /**

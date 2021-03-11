@@ -1,6 +1,8 @@
 package org.bukkit.entity;
 
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.UUID;
 
 /**
  * Represents an Experience Orb.
@@ -89,7 +91,7 @@ public interface ExperienceOrb extends Entity {
      *
      * @return UUID of the player that triggered this orb to drop, or null if unknown/no triggering entity
      */
-    @Nullable java.util.UUID getTriggerEntityId();
+    @Nullable UUID getTriggerEntityId();
 
     /**
      * If this experience orb was spawned in relation to another
@@ -101,7 +103,7 @@ public interface ExperienceOrb extends Entity {
      *
      * @return The UUID of the entity that sourced this experience orb
      */
-    @Nullable java.util.UUID getSourceEntityId();
+    @Nullable UUID getSourceEntityId();
 
     /**
      * Gets the reason that this experience orb was spawned. For any case that we
