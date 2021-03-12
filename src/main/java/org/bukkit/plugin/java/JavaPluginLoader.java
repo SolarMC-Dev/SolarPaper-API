@@ -225,8 +225,7 @@ public sealed class JavaPluginLoader implements PluginLoader permits AccessibleJ
     // Solar start - add protected method
     public Map<Class<? extends Event>, Set<RegisteredListener>> createRegisteredListeners(Listener listener, final Plugin plugin) {
         EventExecutorFactory factory = (plug, list, method, eventClass) -> {
-            EventExecutor asmExecutor = new EventExecutorCreation(list, method, eventClass, SafeClassDefiner.INSTANCE).create();
-            return new co.aikar.timings.TimedEventExecutor(asmExecutor, plug, method, eventClass);
+            return new EventExecutorCreation(list, method, eventClass, SafeClassDefiner.INSTANCE).create();
         };
         return createRegisteredListeners(listener, plugin, factory);
     }
