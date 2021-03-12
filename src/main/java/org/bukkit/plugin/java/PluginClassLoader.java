@@ -183,6 +183,6 @@ public final class PluginClassLoader extends URLClassLoader { // Spigot
         this.pluginInit = javaPlugin;
 
         javaPlugin.logger = this.logger; // Paper - set logger
-        javaPlugin.init(loader, loader.server, description, dataFolder, file, this);
+        javaPlugin.init(loader, loader.server, description, dataFolder, file); // Solar - no nonsense
     }
 }

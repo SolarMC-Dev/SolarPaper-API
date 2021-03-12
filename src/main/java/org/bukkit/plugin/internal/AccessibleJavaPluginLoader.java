@@ -28,8 +28,8 @@ public final class AccessibleJavaPluginLoader extends JavaPluginLoader {
 
     @Override
     public void initPlugin(JavaPlugin plugin, PluginLoader loader, Server server, PluginDescriptionFile description,
-                                  Path dataFolder, Path file, ClassLoader classLoader) {
-        super.initPlugin(plugin, loader, server, description, dataFolder, file, classLoader);
+                                  Path dataFolder, Path file) {
+        super.initPlugin(plugin, loader, server, description, dataFolder, file);
     }
 
     @Override

@@ -385,8 +385,8 @@ public sealed class JavaPluginLoader implements PluginLoader permits AccessibleJ
 
     // Solar start - JavaPlugin access
     protected void initPlugin(JavaPlugin plugin, PluginLoader loader, Server server, PluginDescriptionFile description,
-                           Path dataFolder, Path file, ClassLoader classLoader) {
-        plugin.init(loader, server, description, dataFolder.toFile(), file.toFile(), classLoader);
+                           Path dataFolder, Path file) {
+        plugin.init(loader, server, description, dataFolder.toFile(), file.toFile());
     }
 
     protected void setJulLogger(JavaPlugin plugin, java.util.logging.Logger julLogger) {

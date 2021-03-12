@@ -46,7 +46,6 @@ public abstract class JavaPlugin extends PluginBase {
     private File file = null;
     private PluginDescriptionFile description = null;
     private File dataFolder = null;
-    private ClassLoader classLoader = null;
     private boolean naggable = true;
     private FileConfiguration newConfig = null;
     private File configFile = null;
@@ -69,7 +68,7 @@ public abstract class JavaPlugin extends PluginBase {
         if (classLoader instanceof PluginClassLoader) {
             throw new IllegalStateException("Cannot use initialization constructor at runtime");
         }
-        init(loader, loader.server, description, dataFolder, file, classLoader);
+        init(loader, loader.server, description, dataFolder, file); // Solar - no nonsense
     }
 
     /**
@@ -252,7 +251,7 @@ public abstract class JavaPlugin extends PluginBase {
      * @return ClassLoader holding this plugin
      */
     protected final ClassLoader getClassLoader() {
-        return classLoader;
+        return getClass().getClassLoader(); // Solar - no nonsense
     }
 
     /**
@@ -273,13 +272,12 @@ public abstract class JavaPlugin extends PluginBase {
     }
 
 
-    final void init(PluginLoader loader, Server server, PluginDescriptionFile description, File dataFolder, File file, ClassLoader classLoader) {
+    final void init(PluginLoader loader, Server server, PluginDescriptionFile description, File dataFolder, File file) { // Solar - remove ClassLoader
         this.loader = loader;
         this.server = server;
         this.file = file;
         this.description = description;
         this.dataFolder = dataFolder;
-        this.classLoader = classLoader;
         this.configFile = new File(dataFolder, "config.yml");
         // Paper start
         if (this.logger == null) {
