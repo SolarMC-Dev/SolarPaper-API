@@ -15,4 +15,13 @@ public interface ClassDefiner {
      */
     Class<?> defineClass(Class<?> listenerClass, String name, byte[] data);
 
+    /**
+     * Determines the package in which the generated class file data will derive its class name
+     *
+     * @return the package in which to place the generated class
+     */
+    default String getDefiningPackage() {
+        return "com.destroystokyo.paper.event.executor.asm.generated";
+    }
+
 }

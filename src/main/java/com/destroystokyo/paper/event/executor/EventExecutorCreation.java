@@ -45,13 +45,14 @@ public final class EventExecutorCreation {
             logDeop("static");
             return new StaticMethodHandleEventExecutor(eventClass, method);
         }
-        if (!method.canAccess(listener)) {
+        if (!Modifier.isPublic(listener.getClass().getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
             logDeop("inaccessible");
             return new MethodHandleEventExecutor(eventClass, method);
         }
-        String name = ASMEventExecutorGenerator.generateName();
-        byte[] classData = ASMEventExecutorGenerator.generateEventExecutor(method, name);
-        Class<? extends EventExecutor> executorClass = classDefiner.defineClass(method.getDeclaringClass(), name, classData)
+        String packageName = classDefiner.getDefiningPackage();
+        String className = packageName + ".GeneratedEventExecutor" + ASMEventExecutorGenerator.generateNameId();
+        byte[] classData = ASMEventExecutorGenerator.generateEventExecutor(method, className);
+        Class<? extends EventExecutor> executorClass = classDefiner.defineClass(method.getDeclaringClass(), className, classData)
                 .asSubclass(EventExecutor.class);
 
         EventExecutor asmExecutor;

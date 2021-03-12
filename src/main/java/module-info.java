@@ -96,10 +96,10 @@ module org.bukkit {
     exports org.spigotmc.event.entity;
     exports org.spigotmc.event.player;
 
-    // Qualified exports to SolarPaper-Server
+    // Qualified exports to SolarPaper-Server and SolarPaper-Assistant
     exports co.aikar.timings.internal to org.bukkit.craftbukkit;
     exports co.aikar.util to org.bukkit.craftbukkit;
-    exports com.destroystokyo.paper.event.executor to org.bukkit.craftbukkit;
+    exports com.destroystokyo.paper.event.executor to org.bukkit.craftbukkit, gg.solarmc.serverassistant;
     exports com.destroystokyo.paper.utils to org.bukkit.craftbukkit;
     exports org.bukkit.plugin.internal to org.bukkit.craftbukkit;
 
