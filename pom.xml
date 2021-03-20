@@ -11,6 +11,11 @@
 
 	<artifactId>solarpaper-api</artifactId>
 
+	<properties>
+		<solar-parent.skipJavadoc>false</solar-parent.skipJavadoc>
+		<solar-parent.skipSources>false</solar-parent.skipSources>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>it.unimi.dsi</groupId>
