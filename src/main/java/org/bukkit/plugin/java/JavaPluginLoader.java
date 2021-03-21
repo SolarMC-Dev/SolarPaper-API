@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 import com.destroystokyo.paper.event.executor.EventExecutorCreation;
 import com.destroystokyo.paper.event.executor.SafeClassDefiner;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Server;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;

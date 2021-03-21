@@ -2,10 +2,9 @@ package org.bukkit.event.server;
 
 import java.net.InetAddress;
 import java.util.Iterator;
-import java.util.List;
 
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.util.CachedServerIcon;

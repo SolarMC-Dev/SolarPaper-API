@@ -26,7 +26,7 @@ package co.aikar.timings;
 import co.aikar.timings.internal.TimingsExport;
 import co.aikar.timings.internal.TimingsManager;
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;

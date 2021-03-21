@@ -1,7 +1,6 @@
 package com.destroystokyo.paper.event.server;
 
 import com.google.common.base.Preconditions;
-import org.apache.commons.lang.Validate;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import com.destroystokyo.paper.exception.ServerException;

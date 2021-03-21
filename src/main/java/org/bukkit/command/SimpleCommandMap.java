@@ -15,7 +15,7 @@ import co.aikar.timings.internal.TimingsManager;
 import com.destroystokyo.paper.event.server.ServerExceptionEvent;
 import com.destroystokyo.paper.exception.ServerCommandException;
 import com.destroystokyo.paper.exception.ServerTabCompleteException;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.defaults.*;

@@ -31,7 +31,7 @@ import co.aikar.timings.internal.TimingsExport;
 import co.aikar.timings.internal.TimingsManager;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.EvictingQueue;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;

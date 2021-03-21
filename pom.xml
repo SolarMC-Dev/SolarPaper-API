@@ -24,16 +24,15 @@
 		</dependency>
 		<!-- TODO: Remove the next 2 dependencies -->
 		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 			<version>1.1.1</version>
 			<scope>compile</scope>
+		</dependency>
+		<!-- Added by SolarMC, replaces commons-lang 2 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</dependency>
 		<!-- -->
 		<dependency>

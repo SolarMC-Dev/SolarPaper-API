@@ -1,6 +1,6 @@
 package org.bukkit.command;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.permissions.Permission;

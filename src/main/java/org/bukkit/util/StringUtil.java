@@ -1,7 +1,7 @@
 package org.bukkit.util;
 
 import java.util.Collection;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 public class StringUtil {
 
@@ -23,9 +23,9 @@ public class StringUtil {
      *     <b>Note: the collection may be modified before this is thrown</b>
      */
     public static <T extends Collection<? super String>> T copyPartialMatches(final String token, final Iterable<String> originals, final T collection) throws UnsupportedOperationException, IllegalArgumentException {
-        Validate.notNull(token, "Search token cannot be null");
-        Validate.notNull(collection, "Collection cannot be null");
-        Validate.notNull(originals, "Originals cannot be null");
+        Validate.isTrue(token != null, "Search token cannot be null");
+        Validate.isTrue(collection != null, "Collection cannot be null");
+        Validate.isTrue(originals != null, "Originals cannot be null");
 
         for (String string : originals) {
             if (startsWithIgnoreCase(string, token)) {
@@ -49,7 +49,7 @@ public class StringUtil {
      * @throws IllegalArgumentException if string is null
      */
     public static boolean startsWithIgnoreCase(final String string, final String prefix) throws IllegalArgumentException, NullPointerException {
-        Validate.notNull(string, "Cannot check a null string for a match");
+        Validate.isTrue(string != null, "Cannot check a null string for a match");
         if (string.length() < prefix.length()) {
             return false;
         }

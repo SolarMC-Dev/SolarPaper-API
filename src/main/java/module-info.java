@@ -6,8 +6,6 @@ module org.bukkit {
     requires transitive java.desktop; // org.bukkit.map.MapPalette needs it
 
     // Library dependencies
-    // TODO: add all dependencies here
-
     requires transitive org.slf4j;
     requires transitive gg.solarmc.loader;
     requires transitive org.spigotmc.bungee.api.chat;
@@ -16,11 +14,11 @@ module org.bukkit {
     requires org.yaml.snakeyaml;
     requires org.objectweb.asm;
     requires org.objectweb.asm.commons;
+    requires org.apache.commons.lang3;
     requires com.google.common;
     requires com.google.gson;
     requires it.unimi.dsi.fastutil;
 
-    requires commons.lang; // TODO: migrate to commons 3
     // TODO: drop this and replace with Gson
     requires json.simple;
 
