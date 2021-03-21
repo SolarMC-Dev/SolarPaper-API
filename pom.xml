@@ -22,7 +22,7 @@
 			<artifactId>fastutil</artifactId>
 			<version>8.4.4</version>
 		</dependency>
-		<!-- TODO: Remove the next 2 dependencies -->
+		<!-- TODO: Remove the next dependency -->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
