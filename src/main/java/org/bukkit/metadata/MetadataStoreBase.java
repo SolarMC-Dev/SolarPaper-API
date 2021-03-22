@@ -36,11 +36,7 @@ public abstract class MetadataStoreBase<T> {
         Plugin owningPlugin = newMetadataValue.getOwningPlugin();
         Validate.notNull(owningPlugin, "Plugin cannot be null");
         String key = disambiguate(subject, metadataKey);
-        Map<Plugin, MetadataValue> entry = metadataMap.get(key);
-        if (entry == null) {
-            entry = new WeakHashMap<Plugin, MetadataValue>(1);
-            metadataMap.put(key, entry);
-        }
+        Map<Plugin, MetadataValue> entry = metadataMap.computeIfAbsent(key, k -> new HashMap<>(1));
         synchronized (entry) {
             entry.put(owningPlugin, newMetadataValue);
         }
