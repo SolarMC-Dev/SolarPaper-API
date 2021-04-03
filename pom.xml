@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>gg.solarmc</groupId>
 		<artifactId>solarpaper-parent</artifactId>
-		<version>1.1.1</version>
+		<version>1.1.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>solarpaper-api</artifactId>
@@ -28,6 +28,16 @@
 			<artifactId>json-simple</artifactId>
 			<version>1.1.1</version>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Added by SolarMC, replaces commons-lang 2 -->
 		<dependency>
