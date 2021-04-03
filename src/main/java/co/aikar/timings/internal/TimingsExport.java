@@ -26,6 +26,8 @@ package co.aikar.timings.internal;
 import co.aikar.timings.TimingsReportListener;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -34,22 +36,24 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.EntityType;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import space.arim.omnibus.util.ThisClass;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -250,9 +254,11 @@ public class TimingsExport extends Thread {
         return timingsCost;
     }
 
-    private static JSONObject mapAsJSON(ConfigurationSection config, String parentKey) {
+    // Solar start - use Gson instead of json-simple
+    private static Map<String, Object> mapAsJSON(ConfigurationSection config, String parentKey) {
 
-        JSONObject object = new JSONObject();
+        Map<String, Object> object = new LinkedHashMap<>();
+    // Solar end
         for (String key : config.getKeys(false)) {
             String fullKey = (parentKey != null ? parentKey + "." + key : key);
             if (fullKey.equals("database") || fullKey.equals("settings.bungeecord-addresses") || TimingsManager.hiddenConfigs.contains(fullKey)) {
@@ -296,12 +302,14 @@ public class TimingsExport extends Thread {
             con.setRequestMethod("POST");
             con.setInstanceFollowRedirects(false);
 
-            OutputStream request = new GZIPOutputStream(con.getOutputStream()) {{
+            // Solar - switch to Gson and use try-with-resources
+            try (OutputStream request = new GZIPOutputStream(con.getOutputStream()) {{
                 this.def.setLevel(7);
-            }};
+            }}; Writer requestWriter = new BufferedWriter(new OutputStreamWriter(request, StandardCharsets.UTF_8))) {
 
-            request.write(JSONValue.toJSONString(out).getBytes(StandardCharsets.UTF_8));
-            request.close();
+            new Gson().toJson(out, new TypeToken<Map<String, Object>>(){}.getType(), requestWriter);
+            }
+            // Solar end
 
             response = getResponse(con);
 

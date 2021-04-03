@@ -14,6 +14,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.util.StringUtil;
 
 import com.google.common.collect.ImmutableList;
+/*
 import com.google.common.io.Resources;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+*/
 
 // Paper start
 import java.io.InputStreamReader;
@@ -49,7 +51,7 @@ public class VersionCommand extends BukkitCommand {
         if (args.length == 0) {
             sender.sendMessage("This server is running " + Bukkit.getName() + " version " + Bukkit.getVersion() + " (Implementing API version " + Bukkit.getBukkitVersion() + ")");
             tellHistory(sender); // Paper
-            sendVersion(sender); // Paper - We'll say when, thanks
+            //sendVersion(sender); // Paper - We'll say when, thanks // Solar - nope
         } else {
             StringBuilder name = new StringBuilder();
 
@@ -163,6 +165,7 @@ public class VersionCommand extends BukkitCommand {
         return ImmutableList.of();
     }
 
+    /* Solar - get rid of this junk
     private final ReentrantLock versionLock = new ReentrantLock();
     private boolean hasVersion = false;
     private String versionMessage = null;
@@ -281,7 +284,7 @@ public class VersionCommand extends BukkitCommand {
                 reader.close();
             }
             */
-    }
+    /*} // Solar
 
     private static int getFromJenkins(int currentVer) {
         try {
@@ -334,4 +337,5 @@ public class VersionCommand extends BukkitCommand {
         }
     }
     // Paper end
+    */ // Solar
 }

@@ -15,28 +15,15 @@
 		<solar-parent.skipSources>false</solar-parent.skipSources>
 	</properties>
 
+	<scm>
+		<developerConnection>scm:git:https://github.com/SolarMC-Dev/SolarPaper-API.git</developerConnection>
+	</scm>
+
 	<dependencies>
 		<dependency>
 			<groupId>it.unimi.dsi</groupId>
 			<artifactId>fastutil</artifactId>
 			<version>8.5.2</version>
-		</dependency>
-		<!-- TODO: Remove the next dependency -->
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>junit</groupId>
-					<artifactId>junit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.hamcrest</groupId>
-					<artifactId>hamcrest-core</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!-- Added by SolarMC, replaces commons-lang 2 -->
 		<dependency>

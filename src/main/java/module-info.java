@@ -19,9 +19,6 @@ module org.bukkit {
     requires com.google.gson;
     requires it.unimi.dsi.fastutil;
 
-    // TODO: drop this and replace with Gson
-    requires json.simple;
-
     // Export to everyone
 
     // co.aikar
