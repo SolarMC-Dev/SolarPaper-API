@@ -97,10 +97,10 @@ module org.bukkit {
     exports com.destroystokyo.paper.event.executor to org.bukkit.craftbukkit, gg.solarmc.serverassistant;
     exports com.destroystokyo.paper.utils to org.bukkit.craftbukkit;
     exports org.bukkit.plugin.internal to org.bukkit.craftbukkit;
+    exports org.bukkit.command.defaults to org.bukkit.craftbukkit;
 
     /*
     Fully encapsulated:
     com.destroystokyo.paper.utils
-    org.bukkit.command.defaults
      */
 }
