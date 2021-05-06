@@ -79,14 +79,18 @@ public interface Server extends PluginMessageRecipient {
     public String getName();
 
     /**
-     * Gets the version string of this server implementation.
+     * Gets the version string of this server implementation. <br>
+     * <br>
+     * This looks like {@literal git-Paper-96b84a2 (MC: 1.12.2)}
      *
      * @return version of this server implementation
      */
     public String getVersion();
 
     /**
-     * Gets the Bukkit version that this server is running.
+     * Gets the Bukkit version that this server is running. <br>
+     * <br>
+     * This looks like {@literal 1.12.2-R0.1-SNAPSHOT}
      *
      * @return version of Bukkit
      */
