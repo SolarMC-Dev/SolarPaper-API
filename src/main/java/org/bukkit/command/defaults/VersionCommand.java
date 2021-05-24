@@ -31,7 +31,6 @@ import org.json.simple.parser.ParseException;
 // Paper start
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import com.destroystokyo.paper.VersionHistoryManager;
 // Paper end
 
 public class VersionCommand extends BukkitCommand {
@@ -89,6 +88,8 @@ public class VersionCommand extends BukkitCommand {
 
     // Paper start - show version history
     private void tellHistory(final CommandSender sender) {
+        // Solar start - add to dumpster
+        /*
         final VersionHistoryManager.VersionData data = VersionHistoryManager.INSTANCE.getVersionData();
         if (data == null) {
             return;
@@ -100,6 +101,8 @@ public class VersionCommand extends BukkitCommand {
         }
 
         sender.sendMessage("Previous version: " + oldVersion);
+        */
+        // Solar end
     }
     // Paper end
 
