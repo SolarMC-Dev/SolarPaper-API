@@ -6,6 +6,7 @@ import java.util.Date;
 import com.destroystokyo.paper.Title;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import gg.solarmc.loader.OnlineSolarPlayer;
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.Achievement;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
@@ -536,13 +537,16 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
         return banEntry;
     }
 
+    // Solar start - deprecate in favor of adventure
     /**
      * Sends an Action Bar message to the client.
      *
      * Use Section symbols for legacy color codes to send formatting.
      *
      * @param message The message to send
+     * @deprecated Use the adventure method instead
      */
+    @Deprecated
     public void sendActionBar(String message);
 
     /**
@@ -552,14 +556,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      *
      * @param alternateChar Alternate symbol such as '&amp;'
      * @param message The message to send
+     * @deprecated Use the adventure method instead
      */
+    @Deprecated
     public void sendActionBar(char alternateChar, String message);
 
     /**
      * Sends the component to the player
      *
      * @param component the components to send
+     * @deprecated Use the adventure methods instead
      */
+    @Deprecated
     @Override
     public default void sendMessage(net.md_5.bungee.api.chat.BaseComponent component) {
         spigot().sendMessage(component);
@@ -569,7 +577,9 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * Sends an array of components as a single message to the player
      *
      * @param components the components to send
+     * @deprecated Use the adventure methods instead
      */
+    @Deprecated
     @Override
     public default void sendMessage(net.md_5.bungee.api.chat.BaseComponent... components) {
         spigot().sendMessage(components);
@@ -592,7 +602,9 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      *
      * @param header content for the top of the player list
      * @param footer content for the bottom of the player list
+     * @deprecated Use the adventure methods instead
      */
+    @Deprecated
     public void setPlayerListHeaderFooter(net.md_5.bungee.api.chat.BaseComponent[] header, net.md_5.bungee.api.chat.BaseComponent[] footer);
 
     /**
@@ -600,8 +612,11 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      *
      * @param header content for the top of the player list
      * @param footer content for the bottom of the player list
+     * @deprecated Use the adventure methods instead
      */
+    @Deprecated
     public void setPlayerListHeaderFooter(net.md_5.bungee.api.chat.BaseComponent header, net.md_5.bungee.api.chat.BaseComponent footer);
+    // Solar end
 
     /**
      * Update the times for titles displayed to the player
@@ -676,6 +691,7 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
     @Deprecated
     public void showTitle(net.md_5.bungee.api.chat.BaseComponent title, net.md_5.bungee.api.chat.BaseComponent subtitle, int fadeInTicks, int stayTicks, int fadeOutTicks);
 
+    // Solar start - deprecate in favor of adventure
     /**
      * Show the title to the player, overriding any previously displayed title.
      *
@@ -683,7 +699,9 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      *
      * @param title the title to send
      * @throws NullPointerException if the title is null
+     * @deprecated Use the adventure method instead
      */
+    @Deprecated
     void sendTitle(Title title);
 
     /**
@@ -693,13 +711,19 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      *
      * @param title the title to send
      * @throws NullPointerException if title is null
+     * @deprecated Use the adventure method instead
      */
+    @Deprecated
     void updateTitle(Title title);
 
     /**
      * Hide any title that is currently visible to the player
+     *
+     * @deprecated Use adventure's {@link Audience#clearTitle()} instead
      */
+    @Deprecated
     public void hideTitle();
+    // Solar end
     // Paper end
 
     /**
@@ -1943,15 +1967,19 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        // Solar start - deprecate in favor of adventure
+        @Deprecated
         @Override
         public void sendMessage(net.md_5.bungee.api.chat.BaseComponent component) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
+        @Deprecated
         @Override
         public void sendMessage(net.md_5.bungee.api.chat.BaseComponent... components) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
+        // Solar end
 
         /**
          * Sends the component to the specified screen position of this player

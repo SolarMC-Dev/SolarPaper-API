@@ -10,6 +10,9 @@ module org.bukkit {
     requires transitive gg.solarmc.loader;
     requires transitive org.spigotmc.bungee.api.chat;
     requires transitive org.checkerframework.checker.qual;
+    requires transitive net.kyori.adventure;
+    requires transitive net.kyori.adventure.key; // Adventure is an automatic module so it does not declare this
+    requires transitive net.kyori.examination.api; // ibid
 
     requires org.yaml.snakeyaml;
     requires org.objectweb.asm;
