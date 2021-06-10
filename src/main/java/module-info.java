@@ -98,6 +98,7 @@ module org.bukkit {
     exports com.destroystokyo.paper.utils to org.bukkit.craftbukkit;
     exports org.bukkit.plugin.internal to org.bukkit.craftbukkit;
     exports org.bukkit.command.defaults to org.bukkit.craftbukkit;
+    exports org.bukkit.map.internal to org.bukkit.craftbukkit;
 
     /*
     Fully encapsulated:

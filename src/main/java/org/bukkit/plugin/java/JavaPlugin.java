@@ -21,6 +21,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginBase;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
@@ -409,10 +410,25 @@ public abstract class JavaPlugin extends PluginBase {
      */
     public static JavaPlugin getProvidingPlugin(Class<?> clazz) {
         Validate.notNull(clazz, "Null class cannot have a plugin");
-        // Solar start - unsupported
-        if (true) {
-            throw new UnsupportedOperationException("Unfortunately this operation cannot be performed. " +
-                    "Please analyze namespaces to determine which class belongs to which plugin.");
+        // Solar start - support module layers
+        {
+            ModuleLayer moduleLayer = clazz.getModule().getLayer();
+            if (moduleLayer != null) {
+                // Determine binary name for use with Class.forName(Module, String)
+                String binaryName = clazz.getName();
+                if (clazz.isHidden()) {
+                    binaryName = binaryName.substring(0, binaryName.lastIndexOf('/'));
+                }
+                // Look for a plugin whose module contains the class
+                for (Plugin plugin : org.bukkit.Bukkit.getServer().getPluginManager().getPlugins()) {
+                    if (plugin instanceof JavaPlugin javaPlugin) {
+                        Class<?> classInModule = Class.forName(plugin.getClass().getModule(), binaryName);
+                        if (classInModule != null) {
+                            return javaPlugin;
+                        }
+                    }
+                }
+            }
         }
         // Solar end
         final ClassLoader cl = clazz.getClassLoader();
