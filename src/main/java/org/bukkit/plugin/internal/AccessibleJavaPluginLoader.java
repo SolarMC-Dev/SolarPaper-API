@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
 
-public final class AccessibleJavaPluginLoader extends JavaPluginLoader {
+public final class AccessibleJavaPluginLoader extends JavaPluginLoader implements ExtendedPluginLoader {
 
     public AccessibleJavaPluginLoader(Server instance) {
         super(instance);
