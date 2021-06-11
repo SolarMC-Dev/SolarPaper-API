@@ -38,6 +38,9 @@ import org.bukkit.plugin.internal.PluginHolder;
 import org.bukkit.util.FileUtil;
 
 import com.google.common.collect.ImmutableSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import space.arim.omnibus.util.ThisClass;
 
 /**
  * Handles all plugin management from the Server
@@ -54,6 +57,8 @@ public sealed class SimplePluginManager implements PluginManager permits BridgeP
     private final Map<String, Map<Permissible, Boolean>> permSubs = new HashMap<String, Map<Permissible, Boolean>>();
     private final Map<Boolean, Map<Permissible, Boolean>> defSubs = new HashMap<Boolean, Map<Permissible, Boolean>>();
     private boolean useTimings = false;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThisClass.get()); // Solar
 
     public SimplePluginManager(Server instance, SimpleCommandMap commandMap) {
         server = instance;
@@ -229,10 +234,9 @@ public sealed class SimplePluginManager implements PluginManager permits BridgeP
                             dependencies.remove(plugin);
 
                             // Solar start
-                            server.getLogger().log(
-                                    Level.SEVERE,
-                                    "Could not load '" + entry.getValue() + " due to missing dependency",
-                                    new UnknownDependencyException(dependency));
+                            LOGGER.error(
+                                    "Could not load {} from {} due to missing dependency",
+                                    plugin, entry.getValue(), new UnknownDependencyException(dependency));
                             // Solar end
                             break;
                         }
@@ -269,7 +273,7 @@ public sealed class SimplePluginManager implements PluginManager permits BridgeP
                         loadedPlugins.add(plugin);
                         continue;
                     } catch (InvalidPluginException ex) {
-                        server.getLogger().log(Level.SEVERE, "Could not load '" + file, ex); // Solar
+                        LOGGER.error("Could not load {} from {}", plugin, file, ex); // Solar
                     }
                 }
             }
@@ -294,7 +298,7 @@ public sealed class SimplePluginManager implements PluginManager permits BridgeP
                             loadedPlugins.add(plugin);
                             continue;
                         } catch (InvalidPluginException ex) {
-                            server.getLogger().log(Level.SEVERE, "Could not load '" + file, ex); // Solar
+                            LOGGER.error("Could not load {} from {}", plugin, file, ex);
                         }
                     }
                 }

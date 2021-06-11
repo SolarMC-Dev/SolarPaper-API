@@ -18,6 +18,7 @@ module org.bukkit {
     requires com.google.common;
     requires com.google.gson;
     requires it.unimi.dsi.fastutil;
+    requires space.arim.omnibus;
 
     // Export to everyone
 
