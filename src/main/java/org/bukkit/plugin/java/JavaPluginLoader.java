@@ -147,6 +147,7 @@ public sealed class JavaPluginLoader implements PluginLoader permits AccessibleJ
             JarEntry entry = jar.getJarEntry("plugin.yml");
 
             if (entry == null) {
+                // Solar - This exception message is a magic string
                 throw new InvalidDescriptionException(new FileNotFoundException("Jar does not contain plugin.yml"));
             }
 
