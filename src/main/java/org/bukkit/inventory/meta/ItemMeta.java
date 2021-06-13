@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * This type represents the storage mechanism for auxiliary item data.
@@ -16,6 +18,24 @@ import org.bukkit.inventory.ItemFlag;
  */
 public interface ItemMeta extends Cloneable, ConfigurationSerializable {
 
+    // Solar start - adventure
+    /**
+     * Gets the display name.
+     *
+     * <p>Plugins should check that {@link #hasDisplayName()} returns <code>true</code> before calling this method.</p>
+     *
+     * @return the display name
+     */
+    @Nullable Component displayName();
+
+    /**
+     * Sets the display name.
+     *
+     * @param displayName the display name to set
+     */
+    void displayName(final @Nullable Component displayName);
+    // Solar end
+
     /**
      * Checks for existence of a display name.
      *
@@ -23,6 +43,7 @@ public interface ItemMeta extends Cloneable, ConfigurationSerializable {
      */
     boolean hasDisplayName();
 
+    // Solar start - adventure
     /**
      * Gets the display name that is set.
      * <p>
@@ -30,15 +51,20 @@ public interface ItemMeta extends Cloneable, ConfigurationSerializable {
      * before calling this method.
      *
      * @return the display name that is set
+     * @deprecated Use the adventure {@link #displayName()}
      */
+    @Deprecated
     String getDisplayName();
 
     /**
      * Sets the display name.
      *
      * @param name the name to set
+     * @deprecated Use the adventure {@link #displayName(Component)}
      */
+    @Deprecated
     void setDisplayName(String name);
+    // Solar end
 
     /**
      * Checks for existence of a localized name.
@@ -64,6 +90,24 @@ public interface ItemMeta extends Cloneable, ConfigurationSerializable {
      */
     void setLocalizedName(String name);
 
+    // Solar start - adventure
+    /**
+     * Gets the lore.
+     *
+     * <p>Plugins should check that {@link #hasLore()} returns <code>true</code> before calling this method.</p>
+     *
+     * @return the display name
+     */
+    @Nullable List<Component> lore();
+
+    /**
+     * Sets the lore.
+     *
+     * @param lore the lore to set
+     */
+    void lore(final @Nullable List<Component> lore);
+    // Solar end
+
     /**
      * Checks for existence of lore.
      *
@@ -71,6 +115,7 @@ public interface ItemMeta extends Cloneable, ConfigurationSerializable {
      */
     boolean hasLore();
 
+    // Solar start - adventure
     /**
      * Gets the lore that is set.
      * <p>
@@ -78,7 +123,9 @@ public interface ItemMeta extends Cloneable, ConfigurationSerializable {
      * calling this method.
      * 
      * @return a list of lore that is set
+     * @deprecated Use the adventure {@link #lore()}
      */
+    @Deprecated
     List<String> getLore();
 
     /**
@@ -86,8 +133,11 @@ public interface ItemMeta extends Cloneable, ConfigurationSerializable {
      * Removes lore when given null.
      *
      * @param lore the lore that will be set
+     * @deprecated Use the adventure {@link #lore(List)}
      */
+    @Deprecated
     void setLore(List<String> lore);
+    // Solar end
 
     /**
      * Checks for the existence of any enchantments.

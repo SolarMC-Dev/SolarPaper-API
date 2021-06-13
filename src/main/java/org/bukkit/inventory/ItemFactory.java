@@ -1,11 +1,16 @@
 package org.bukkit.inventory;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.function.UnaryOperator;
 
 /**
  * An instance of the ItemFactory can be obtained with {@link
@@ -144,4 +149,24 @@ public interface ItemFactory {
      */
     String getI18NDisplayName(ItemStack item);
     // Paper end
+
+    // Solar start - adventure
+    /**
+     * Creates a hover event for the given item.
+     *
+     * @param item item The item
+     * @param op an operation
+     * @return A hover event
+     */
+    HoverEvent<HoverEvent.ShowItem> asHoverEvent(final @NonNull ItemStack item,
+                                                 final @NonNull UnaryOperator<HoverEvent.ShowItem> op);
+
+    /**
+     * Get the formatted display name of the {@link ItemStack}.
+     *
+     * @param itemStack the {@link ItemStack}
+     * @return display name of the {@link ItemStack}
+     */
+    Component displayName(@NonNull ItemStack itemStack);
+    // Solar end
 }

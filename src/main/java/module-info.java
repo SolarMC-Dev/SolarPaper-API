@@ -22,6 +22,7 @@ module org.bukkit {
     requires com.google.gson;
     requires it.unimi.dsi.fastutil;
     requires space.arim.omnibus;
+    requires net.kyori.adventure.text.serializer.legacy;
 
     // Export to everyone
 

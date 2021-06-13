@@ -5,21 +5,27 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.event.HoverEventSource;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.Utility;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents a stack of items
  */
-public class ItemStack implements Cloneable, ConfigurationSerializable {
+public class ItemStack implements Cloneable, ConfigurationSerializable, HoverEventSource<HoverEvent.ShowItem> { // Solar
     private int type = 0;
     private int amount = 0;
     private MaterialData data = null;
@@ -773,4 +779,24 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
         return itemMeta.hasItemFlag(flag);
     }
     // Paper end
+
+    // Solar start - adventure
+    private Server getServer() {
+        return Bukkit.getServer();
+    }
+
+    @Override
+    public @NonNull HoverEvent<HoverEvent.ShowItem> asHoverEvent(final @NonNull UnaryOperator<HoverEvent.ShowItem> op) {
+        return getServer().getItemFactory().asHoverEvent(this, op);
+    }
+
+    /**
+     * Get the formatted display name of the {@link ItemStack}.
+     *
+     * @return display name of the {@link ItemStack}
+     */
+    public @NonNull Component displayName() {
+        return getServer().getItemFactory().displayName(this);
+    }
+    // Solar end
 }

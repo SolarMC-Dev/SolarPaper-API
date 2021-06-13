@@ -2,11 +2,13 @@ package org.bukkit.entity;
 
 import java.net.InetSocketAddress;
 import java.util.Date;
+import java.util.List;
 
 import com.destroystokyo.paper.Title;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import gg.solarmc.loader.OnlineSolarPlayer;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Achievement;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
@@ -33,6 +35,8 @@ import org.bukkit.map.MapView;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
 import org.bukkit.scoreboard.Scoreboard;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents a player, connected or not
@@ -119,12 +123,23 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      */
     public void sendRawMessage(String message);
 
+    // Solar start - adventure
+    /**
+     * Kicks player with custom kick message.
+     *
+     * @param message kick message
+     * @deprecated Use the adventure {@link #kick(Component)}
+     */
+    @Deprecated
+    void kickPlayer(String message);
+
     /**
      * Kicks player with custom kick message.
      *
      * @param message kick message
      */
-    public void kickPlayer(String message);
+    void kick(@Nullable Component message);
+    // Solar end
 
     /**
      * Says a message (or runs a command).
@@ -377,6 +392,7 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
     @Deprecated
     public void sendBlockChange(Location loc, int material, byte data);
 
+    // Solar start - adventure
     /**
      * Send a sign change. This fakes a sign change packet for a user at
      * a certain location. This will not actually change the world in any way.
@@ -392,7 +408,27 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * @throws IllegalArgumentException if location is null
      * @throws IllegalArgumentException if lines is non-null and has a length less than 4
      */
-    public void sendSignChange(Location loc, String[] lines) throws IllegalArgumentException;
+    void sendSignChange(@NonNull Location loc, @Nullable List<Component> lines) throws IllegalArgumentException;
+
+    /**
+     * Send a sign change. This fakes a sign change packet for a user at
+     * a certain location. This will not actually change the world in any way.
+     * This method will use a sign at the location's block or a faked sign
+     * sent via {@link #sendBlockChange(org.bukkit.Location, int, byte)} or
+     * {@link #sendBlockChange(org.bukkit.Location, org.bukkit.Material, byte)}.
+     * <p>
+     * If the client does not have a sign at the given location it will
+     * display an error message to the user.
+     *
+     * @param loc the location of the sign
+     * @param lines the new text on the sign or null to clear it
+     * @throws IllegalArgumentException if location is null
+     * @throws IllegalArgumentException if lines is non-null and has a length less than 4
+     * @deprecated Use the adventure {@link #sendSignChange(Location, List)}
+     */
+    @Deprecated
+    void sendSignChange(Location loc, String[] lines) throws IllegalArgumentException;
+    // Solar end
 
     /**
      * Render a map and send it to the player in its entirety. This may be
