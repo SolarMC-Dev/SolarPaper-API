@@ -3,9 +3,11 @@ package org.bukkit.event.player;
 import java.util.IllegalFormatException;
 import java.util.Set;
 
+import io.papermc.paper.chat.ChatRenderer;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.HandlerList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This event will sometimes fire synchronously, depending on how it was
@@ -23,8 +25,7 @@ import org.bukkit.event.HandlerList;
  * Care should be taken to check {@link #isAsynchronous()} and treat the event
  * appropriately.
  */
-public class AsyncPlayerChatEvent extends PlayerEvent implements Cancellable {
-    private static final HandlerList handlers = new HandlerList();
+public final class AsyncPlayerChatEvent extends AsyncChatEvent { // Solar - use AsyncChatEvent
     private boolean cancel = false;
     private String message;
     private String format = "<%1$s> %2$s";
@@ -64,6 +65,7 @@ public class AsyncPlayerChatEvent extends PlayerEvent implements Cancellable {
         this.message = message;
     }
 
+    // Solar start - deprecate both of these
     /**
      * Gets the format to use to display this chat message.
      * <p>
@@ -73,7 +75,9 @@ public class AsyncPlayerChatEvent extends PlayerEvent implements Cancellable {
      *
      * @return {@link String#format(String, Object...)} compatible format
      *     string
+     * @deprecated Use the new adventure API with {@link #renderer(ChatRenderer)}
      */
+    @Deprecated
     public String getFormat() {
         return format;
     }
@@ -91,8 +95,17 @@ public class AsyncPlayerChatEvent extends PlayerEvent implements Cancellable {
      *     exception
      * @throws NullPointerException if format is null
      * @see String#format(String, Object...)
+     * @deprecated Use the new adventure API with {@link #renderer()}
      */
+    @Deprecated
     public void setFormat(final String format) throws IllegalFormatException, NullPointerException {
+        Logger logger = LoggerFactory.getLogger(getClass());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Plugin used deprecated AsyncPlayerChatEvent#setFormat", new Exception("Stack trace"));
+        } else {
+            logger.warn("Plugin used deprecated AsyncPlayerChatEvent#setFormat. Enable debug to see stack trace");
+        }
+
         // Oh for a better way to do this!
         try {
             String.format(format, player, message);
@@ -103,6 +116,7 @@ public class AsyncPlayerChatEvent extends PlayerEvent implements Cancellable {
 
         this.format = format;
     }
+    // Solar end
 
     /**
      * Gets a set of recipients that this chat message will be displayed to.
@@ -129,12 +143,5 @@ public class AsyncPlayerChatEvent extends PlayerEvent implements Cancellable {
         this.cancel = cancel;
     }
 
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+    // Solar - move handler lists to AsyncChatEvent
 }

@@ -95,6 +95,10 @@ module org.bukkit {
     exports org.spigotmc.event.entity;
     exports org.spigotmc.event.player;
 
+    // io.papermc
+    exports io.papermc.paper.chat;
+    exports io.papermc.paper.event.player;
+
     // Qualified exports to SolarPaper-Server and SolarPaper-Assistant
     exports co.aikar.timings.internal to org.bukkit.craftbukkit;
     exports co.aikar.util to org.bukkit.craftbukkit;

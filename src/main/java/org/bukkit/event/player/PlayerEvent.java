@@ -13,7 +13,7 @@ public abstract class PlayerEvent extends Event {
         player = who;
     }
 
-    PlayerEvent(final Player who, boolean async) {
+    protected PlayerEvent(final Player who, boolean async) { // Solar - make protected
         super(async);
         player = who;
 
