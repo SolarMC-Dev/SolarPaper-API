@@ -33,7 +33,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
-import org.bukkit.plugin.internal.BridgePluginManager;
 import org.bukkit.plugin.internal.PluginHolder;
 import org.bukkit.util.FileUtil;
 
@@ -45,7 +44,7 @@ import space.arim.omnibus.util.ThisClass;
 /**
  * Handles all plugin management from the Server
  */
-public sealed class SimplePluginManager implements PluginManager permits BridgePluginManager { // Solar
+public class SimplePluginManager implements PluginManager { // Solar - non-final, seal in the future
     private final Server server;
     private final Map<Pattern, PluginLoader> fileAssociations = new HashMap<Pattern, PluginLoader>();
     private final List<Plugin> plugins = new ArrayList<Plugin>();
@@ -60,6 +59,16 @@ public sealed class SimplePluginManager implements PluginManager permits BridgeP
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ThisClass.get()); // Solar
 
+    // Solar start - deprecate
+    /**
+     * Creates from a server and command map
+     *
+     * @param instance the server
+     * @param commandMap the command map
+     * @deprecated Not intended for public access. Will be made into a sealed class in a future release
+     */
+    @Deprecated
+    // Solar end
     public SimplePluginManager(Server instance, SimpleCommandMap commandMap) {
         server = instance;
         this.commandMap = commandMap;

@@ -37,7 +37,6 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.TimedRegisteredListener;
 import org.bukkit.plugin.UnknownDependencyException;
-import org.bukkit.plugin.internal.AccessibleJavaPluginLoader;
 import org.bukkit.plugin.internal.EventExecutorFactory;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -45,7 +44,7 @@ import org.yaml.snakeyaml.error.YAMLException;
 /**
  * Represents a Java plugin loader, allowing plugins in the form of .jar
  */
-public sealed class JavaPluginLoader implements PluginLoader permits AccessibleJavaPluginLoader { // Solar
+public class JavaPluginLoader implements PluginLoader { // Solar - non-final, seal in the future
     final Server server;
     private final Pattern[] fileFilters = new Pattern[] { Pattern.compile("\\.jar$"), };
     private final Map<String, Class<?>> classes = new java.util.concurrent.ConcurrentHashMap<String, Class<?>>(); // Spigot
@@ -55,6 +54,7 @@ public sealed class JavaPluginLoader implements PluginLoader permits AccessibleJ
      * This class was not meant to be constructed explicitly
      * 
      * @param instance the server instance
+     * @deprecated Not intended for public access. Will be made into a sealed class in a future release
      */
     @Deprecated
     public JavaPluginLoader(Server instance) {
