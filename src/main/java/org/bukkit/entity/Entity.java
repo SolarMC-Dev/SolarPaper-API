@@ -1,5 +1,7 @@
 package org.bukkit.entity;
 
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.event.HoverEventSource;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.EntityEffect;
@@ -20,7 +22,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 /**
  * Represents a base entity in the world
  */
-public interface Entity extends Metadatable, CommandSender, Nameable {
+public interface Entity extends Metadatable, CommandSender, Nameable, HoverEventSource<HoverEvent.ShowEntity> { // Solar - adventure
 
     /**
      * Gets the entity's current position
