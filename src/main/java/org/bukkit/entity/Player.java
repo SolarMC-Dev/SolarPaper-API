@@ -8,6 +8,8 @@ import com.destroystokyo.paper.Title;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import gg.solarmc.loader.OnlineSolarPlayer;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identified;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Achievement;
 import org.bukkit.BanEntry;
@@ -41,7 +43,21 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /**
  * Represents a player, connected or not
  */
-public interface Player extends HumanEntity, Conversable, CommandSender, OfflinePlayer, PluginMessageRecipient, com.destroystokyo.paper.network.NetworkClient { // Paper - Extend NetworkClient
+// Solar start - extend Identified
+public interface Player extends HumanEntity, Conversable, CommandSender, OfflinePlayer, PluginMessageRecipient,
+        com.destroystokyo.paper.network.NetworkClient, Identified { // Paper - Extend NetworkClient
+
+    /**
+     * Gets the player's UUID as an {@code Identity}
+     *
+     * @return the player's identity
+     */
+    @Override
+    @NonNull
+    default Identity identity() {
+        return Identity.identity(getUniqueId());
+    }
+    // Solar end
 
     /**
      * Gets the "friendly" name to display of this player. This may include
