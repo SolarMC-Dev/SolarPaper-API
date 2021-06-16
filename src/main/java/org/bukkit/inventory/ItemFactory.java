@@ -154,11 +154,11 @@ public interface ItemFactory {
     /**
      * Creates a hover event for the given item.
      *
-     * @param item item The item
+     * @param itemStack item The item
      * @param op an operation
      * @return A hover event
      */
-    HoverEvent<HoverEvent.ShowItem> asHoverEvent(final @NonNull ItemStack item,
+    HoverEvent<HoverEvent.ShowItem> asHoverEvent(final @NonNull ItemStack itemStack,
                                                  final @NonNull UnaryOperator<HoverEvent.ShowItem> op);
 
     /**
