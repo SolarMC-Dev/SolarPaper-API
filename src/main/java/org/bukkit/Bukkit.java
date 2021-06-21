@@ -45,6 +45,7 @@ import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents the Bukkit core, for version and Server singleton handling
@@ -84,8 +85,21 @@ public final class Bukkit {
         }
 
         Bukkit.server = server;
-        server.getLogger().info("This server is running " + getName() + " version " + getVersion() + " (Implementing API version " + getBukkitVersion() + ")");
+        // Solar start - lookup own logger, helps with testing
+        LoggerFactory.getLogger(Bukkit.class).info("This server is running " + getName() + " version " + getVersion() + " (Implementing API version " + getBukkitVersion() + ")");
+        // Solar end
     }
+
+    // Solar start - singleton resetter
+    /**
+     * Resets the server singleton. This is intended for testing purposes where
+     * code using {@link #setServer(Server)} needs to cleanup after itself when done
+     *
+     */
+    public static void resetServer() {
+        server = null;
+    }
+    // Solar end
 
     /**
      * Gets the name of this server implementation.

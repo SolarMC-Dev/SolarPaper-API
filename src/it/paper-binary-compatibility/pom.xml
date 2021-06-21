@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>gg.solarmc.solarpaper</groupId>
-    <artifactId>it-paper-chat</artifactId>
+    <artifactId>it-paper-binary-compat</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 

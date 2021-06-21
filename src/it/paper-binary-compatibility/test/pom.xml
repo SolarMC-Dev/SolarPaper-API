@@ -3,16 +3,16 @@
 
     <parent>
         <groupId>gg.solarmc.solarpaper</groupId>
-        <artifactId>it-paper-chat</artifactId>
+        <artifactId>it-paper-binary-compat</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>it-paper-chat-test</artifactId>
+    <artifactId>it-paper-binary-compat-test</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>gg.solarmc.solarpaper</groupId>
-            <artifactId>it-paper-chat-compile</artifactId>
+            <artifactId>it-paper-binary-compat-compile</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
