@@ -147,7 +147,7 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * @deprecated Use the adventure {@link #kick(Component)}
      */
     @Deprecated
-    void kickPlayer(String message);
+    void kickPlayer(@Nullable String message);
 
     /**
      * Kicks player with custom kick message.
