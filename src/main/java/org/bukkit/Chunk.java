@@ -8,7 +8,7 @@ import org.bukkit.persistence.PersistentDataHolder;
 /**
  * Represents a chunk of blocks
  */
-public interface Chunk extends PersistentDataHolder {
+public interface Chunk extends PersistentDataHolder{
 
     /**
      * Gets the X-coordinate of this chunk
@@ -25,7 +25,6 @@ public interface Chunk extends PersistentDataHolder {
     int getZ();
 
     // Paper start
-
     /**
      * @return The Chunks X and Z coordinates packed into a long
      */
@@ -61,12 +60,12 @@ public interface Chunk extends PersistentDataHolder {
     /**
      * Capture thread-safe read-only snapshot of chunk data
      *
-     * @param includeMaxblocky     - if true, snapshot includes per-coordinate
-     *                             maximum Y values
-     * @param includeBiome         - if true, snapshot includes per-coordinate biome
-     *                             type
+     * @param includeMaxblocky - if true, snapshot includes per-coordinate
+     *     maximum Y values
+     * @param includeBiome - if true, snapshot includes per-coordinate biome
+     *     type
      * @param includeBiomeTempRain - if true, snapshot includes per-coordinate
-     *                             raw biome temperature and rainfall
+     *     raw biome temperature and rainfall
      * @return ChunkSnapshot
      */
     ChunkSnapshot getChunkSnapshot(boolean includeMaxblocky, boolean includeBiome, boolean includeBiomeTempRain);
@@ -96,7 +95,7 @@ public interface Chunk extends PersistentDataHolder {
      * Loads the chunk.
      *
      * @param generate Whether or not to generate a chunk if it doesn't
-     *                 already exist
+     *     already exist
      * @return true if the chunk has loaded successfully, otherwise false
      */
     boolean load(boolean generate);
@@ -113,7 +112,7 @@ public interface Chunk extends PersistentDataHolder {
      *
      * @param save Controls whether the chunk is saved
      * @param safe Controls whether to unload the chunk when players are
-     *             nearby
+     *     nearby
      * @return true if the chunk has unloaded successfully, otherwise false
      * @deprecated it is never safe to remove a chunk in use
      */
