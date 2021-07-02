@@ -1,5 +1,7 @@
 package org.bukkit.persistence;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * This class represents an enum with a generic content type. It defines the
  * types a custom tag can have.
@@ -80,6 +82,7 @@ public interface PersistentDataType<T, Z> {
      *
      * @return the class
      */
+    @NotNull
     Class<T> getPrimitiveType();
 
     /**
@@ -87,6 +90,7 @@ public interface PersistentDataType<T, Z> {
      *
      * @return the class type
      */
+    @NotNull
     Class<Z> getComplexType();
 
     /**
@@ -97,7 +101,8 @@ public interface PersistentDataType<T, Z> {
      * @param context the context this operation is running in
      * @return the primitive value
      */
-    T toPrimitive(Z complex, PersistentDataAdapterContext context);
+    @NotNull
+    T toPrimitive(@NotNull Z complex, @NotNull PersistentDataAdapterContext context);
 
     /**
      * Creates a complex object based of the passed primitive value
@@ -106,7 +111,8 @@ public interface PersistentDataType<T, Z> {
      * @param context   the context this operation is running in
      * @return the complex object instance
      */
-    Z fromPrimitive(T primitive, PersistentDataAdapterContext context);
+    @NotNull
+    Z fromPrimitive(@NotNull T primitive, @NotNull PersistentDataAdapterContext context);
 
     /**
      * A default implementation that simply exists to pass on the retrieved or
@@ -121,27 +127,31 @@ public interface PersistentDataType<T, Z> {
 
         private final Class<T> primitiveType;
 
-        PrimitivePersistentDataType(Class<T> primitiveType) {
+        PrimitivePersistentDataType(@NotNull Class<T> primitiveType) {
             this.primitiveType = primitiveType;
         }
 
+        @NotNull
         @Override
         public Class<T> getPrimitiveType() {
             return primitiveType;
         }
 
+        @NotNull
         @Override
         public Class<T> getComplexType() {
             return primitiveType;
         }
 
+        @NotNull
         @Override
-        public T toPrimitive(T complex, PersistentDataAdapterContext context) {
+        public T toPrimitive(@NotNull T complex, @NotNull PersistentDataAdapterContext context) {
             return complex;
         }
 
+        @NotNull
         @Override
-        public T fromPrimitive(T primitive, PersistentDataAdapterContext context) {
+        public T fromPrimitive(@NotNull T primitive, @NotNull PersistentDataAdapterContext context) {
             return primitive;
         }
     }

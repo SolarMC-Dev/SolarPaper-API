@@ -1,6 +1,8 @@
 package org.bukkit.persistence;
 
 import org.bukkit.NamespacedKey;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -30,7 +32,7 @@ public interface PersistentDataContainer {
      * @throws IllegalArgumentException if no suitable adapter will be found for
      *                                  the {@link PersistentDataType#getPrimitiveType()}
      */
-    <T, Z> void set(NamespacedKey key, PersistentDataType<T, Z> type, Z value);
+    <T, Z> void set(@NotNull NamespacedKey key, @NotNull PersistentDataType<T, Z> type, @NotNull Z value);
 
     /**
      * Returns if the persistent metadata provider has metadata registered
@@ -59,7 +61,7 @@ public interface PersistentDataContainer {
      * @throws NullPointerException if the type to cast the found object to is
      *                              null
      */
-    <T, Z> boolean has(NamespacedKey key, PersistentDataType<T, Z> type);
+    <T, Z> boolean has(@NotNull NamespacedKey key, @NotNull PersistentDataType<T, Z> type);
 
     /**
      * Returns the metadata value that is stored on the
@@ -80,8 +82,7 @@ public interface PersistentDataContainer {
      *                                  the {@link
      *                                  PersistentDataType#getPrimitiveType()}
      */
-
-    <T, Z> Z get(NamespacedKey key, PersistentDataType<T, Z> type);
+    @Nullable <T, Z> Z get(@NotNull NamespacedKey key, @NotNull PersistentDataType<T, Z> type);
 
     /**
      * Returns the metadata value that is stored on the
@@ -104,7 +105,7 @@ public interface PersistentDataContainer {
      * @throws IllegalArgumentException if no suitable adapter will be found for
      *                                  the {@link PersistentDataType#getPrimitiveType()}
      */
-    <T, Z> Z getOrDefault(NamespacedKey key, PersistentDataType<T, Z> type, Z defaultValue);
+    @NotNull <T, Z> Z getOrDefault(@NotNull NamespacedKey key, @NotNull PersistentDataType<T, Z> type, @NotNull Z defaultValue);
 
     /**
      * Get a set of keys present on this {@link PersistentDataContainer}
@@ -115,6 +116,7 @@ public interface PersistentDataContainer {
      *
      * @return the key set
      */
+    @NotNull
     Set<NamespacedKey> getKeys();
 
     /**
@@ -123,7 +125,7 @@ public interface PersistentDataContainer {
      * @param key the key
      * @throws NullPointerException if the provided key is null
      */
-    void remove(NamespacedKey key);
+    void remove(@NotNull NamespacedKey key);
 
     /**
      * Returns if the container instance is empty, therefore has no entries
@@ -138,6 +140,6 @@ public interface PersistentDataContainer {
      *
      * @return the tag context
      */
-
+    @NotNull
     PersistentDataAdapterContext getAdapterContext();
 }

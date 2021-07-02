@@ -94,7 +94,7 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
      * vehicle, it will be dismounted prior to teleportation.
      *
      * @param location New location to teleport this entity to
-     * @param cause    The cause of this teleportation
+     * @param cause The cause of this teleportation
      * @return <code>true</code> if the teleport was successful
      */
     public boolean teleport(Location location, TeleportCause cause);
@@ -113,7 +113,7 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
      * vehicle, it will be dismounted prior to teleportation.
      *
      * @param destination Entity to teleport this entity to
-     * @param cause       The cause of this teleportation
+     * @param cause The cause of this teleportation
      * @return <code>true</code> if the teleport was successful
      */
     public boolean teleport(Entity destination, TeleportCause cause);
@@ -274,7 +274,7 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
      * This event may have been cancelled.
      *
      * @return the last known {@link EntityDamageEvent} or null if hitherto
-     * unharmed
+     *     unharmed
      */
     public EntityDamageEvent getLastDamageCause();
 
@@ -477,15 +477,17 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
     PistonMoveReaction getPistonMoveReaction();
 
     // Spigot start
-    public class Spigot extends CommandSender.Spigot {
+    public class Spigot extends CommandSender.Spigot
+    {
 
         /**
          * Returns whether this entity is invulnerable.
          *
          * @return True if the entity is invulnerable.
          */
-        public boolean isInvulnerable() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public boolean isInvulnerable()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
         }
     }
 
@@ -494,7 +496,6 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
     // Spigot end
 
     // Paper start
-
     /**
      * Gets the location where this entity originates from.
      * <p>
