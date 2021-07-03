@@ -2,6 +2,7 @@ package org.bukkit.persistence;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+// Solar - whole class
 /**
  * This class represents an enum with a generic content type. It defines the
  * types a custom tag can have.

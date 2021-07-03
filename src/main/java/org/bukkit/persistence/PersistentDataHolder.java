@@ -2,6 +2,7 @@ package org.bukkit.persistence;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+// Solar - whole class
 /**
  * The {@link PersistentDataHolder} interface defines an object that can store
  * custom persistent meta data on it.

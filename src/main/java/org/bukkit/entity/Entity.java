@@ -21,7 +21,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 /**
  * Represents a base entity in the world
  */
-public interface Entity extends Metadatable, CommandSender, Nameable, PersistentDataHolder {
+public interface Entity extends Metadatable, CommandSender, Nameable, PersistentDataHolder { // Solar - PersistentDataHolder
 
     /**
      * Gets the entity's current position

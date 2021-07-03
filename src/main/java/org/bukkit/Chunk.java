@@ -8,7 +8,7 @@ import org.bukkit.persistence.PersistentDataHolder;
 /**
  * Represents a chunk of blocks
  */
-public interface Chunk extends PersistentDataHolder{
+public interface Chunk extends PersistentDataHolder { // Solar - PersistentDataHolder
 
     /**
      * Gets the X-coordinate of this chunk

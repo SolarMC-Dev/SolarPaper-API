@@ -1,6 +1,7 @@
 package org.bukkit.persistence;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+// Solar - whole class
 /**
  * This interface represents the context in which the {@link PersistentDataType} can
  * serialize and deserialize the passed values.

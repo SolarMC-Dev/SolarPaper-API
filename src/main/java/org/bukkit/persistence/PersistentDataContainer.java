@@ -6,6 +6,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Set;
 
+// Solar - whole class
 /**
  * This interface represents a map like object, capable of storing custom tags
  * in it.
