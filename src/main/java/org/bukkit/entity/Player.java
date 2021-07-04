@@ -10,6 +10,7 @@ import gg.solarmc.loader.OnlineSolarPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identified;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Achievement;
 import org.bukkit.BanEntry;
@@ -59,6 +60,7 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
     }
     // Solar end
 
+    // Solar start - adventure API
     /**
      * Gets the "friendly" name to display of this player. This may include
      * color.
@@ -67,8 +69,10 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * places defined by plugins.
      *
      * @return the friendly name
+     * @deprecated Use {@link #displayName()} instead
      */
-    public String getDisplayName();
+    @Deprecated
+    @NonNull String getDisplayName();
 
     /**
      * Sets the "friendly" name to display of this player. This may include
@@ -78,15 +82,41 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * places defined by plugins.
      *
      * @param name The new display name.
+     * @deprecated Use {@link #displayName(Component)} instead
      */
-    public void setDisplayName(String name);
+    @Deprecated
+    void setDisplayName(@Nullable String name);
+
+    /**
+     * Gets the "friendly" name to display of this player. This may include
+     * color.
+     * <p>
+     * Note that this name will not be displayed in game, only in chat and
+     * places defined by plugins.
+     *
+     * @return the friendly name
+     */
+    @NonNull Component displayName();
+
+    /**
+     * Sets the "friendly" name to display of this player. This may include
+     * color.
+     * <p>
+     * Note that this name will not be displayed in game, only in chat and
+     * places defined by plugins.
+     *
+     * @param name The new display name, null to use {@link #getName()}
+     */
+    void displayName(@Nullable Component name);
 
     /**
      * Gets the name that is shown on the player list.
      *
      * @return the player list name
+     * @deprecated Use the adventure {@link #playerListName()} instead
      */
-    public String getPlayerListName();
+    @Deprecated
+    String getPlayerListName();
 
     /**
      * Sets the name that is shown on the in-game player list.
@@ -108,8 +138,43 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * @throws IllegalArgumentException if the name is already used by someone
      *     else
      * @throws IllegalArgumentException if the length of the name is too long
+     * @deprecated Use the adventure {@link #playerListName(Component)} instead
      */
-    public void setPlayerListName(String name);
+    @Deprecated
+    void setPlayerListName(String name);
+
+    /**
+     * Gets the name that is shown on the player list. <br>
+     * <br>
+     * Null means to use {@link #getName()}
+     *
+     * @return the player list name
+     */
+    @Nullable Component playerListName();
+
+    /**
+     * Sets the name that is shown on the in-game player list.
+     * <p>
+     * The name cannot be longer than 16 characters, but {@link ChatColor} is
+     * supported.
+     * <p>
+     * If the value is null, the name will be identical to {@link #getName()}.
+     * <p>
+     * This name is case sensitive and unique, two names with different casing
+     * will appear as two different people. If a player joins afterwards with
+     * a name that conflicts with a player's custom list name, the joining
+     * player's player list name will have a random number appended to it (1-2
+     * characters long in the default implementation). If the joining player's
+     * name is 15 or 16 characters long, part of the name will be truncated at
+     * the end to allow the addition of the two digits.
+     *
+     * @param name the new player list name, or null to use {@link #getName()}
+     * @throws IllegalArgumentException if the name is already used by someone
+     *     else
+     * @throws IllegalArgumentException if the length of the name is too long
+     */
+    void playerListName(@Nullable Component name);
+    // Solar end
 
     /**
      * Set the target of the player's compass.
@@ -298,6 +363,7 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      */
     public void playSound(Location location, Sound sound, SoundCategory category, float volume, float pitch);
 
+    // Solar start - deprecate magic values
     /**
      * Play a sound for a player at the location.
      * <p>
@@ -310,22 +376,27 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * @param category The category of the sound
      * @param volume the volume of the sound
      * @param pitch the pitch of the sound
+     * @deprecated Magic sound value. Use {@link #playSound(net.kyori.adventure.sound.Sound)} or
+     * {@link #playSound(Location, Sound, SoundCategory, float, float)} instead
      */
-    public void playSound(Location location, String sound, SoundCategory category, float volume, float pitch);
+    @Deprecated
+    void playSound(Location location, String sound, SoundCategory category, float volume, float pitch);
 
     /**
      * Stop the specified sound from playing.
      *
      * @param sound the sound to stop
      */
-    public void stopSound(Sound sound);
+    void stopSound(@NonNull Sound sound);
 
     /**
      * Stop the specified sound from playing.
      *
      * @param sound the sound to stop
+     * @deprecated Magic sound value, use {@link #stopSound(SoundStop)} instead
      */
-    public void stopSound(String sound);
+    @Deprecated
+    void stopSound(@NonNull String sound);
 
     /**
      * Stop the specified sound from playing.
@@ -333,15 +404,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * @param sound the sound to stop
      * @param category the category of the sound
      */
-    public void stopSound(Sound sound, SoundCategory category);
+    void stopSound(@NonNull Sound sound, @Nullable SoundCategory category);
 
     /**
      * Stop the specified sound from playing.
      *
      * @param sound the sound to stop
      * @param category the category of the sound
+     * @deprecated Magic sound value, use {@link #stopSound(SoundStop)} instead
      */
-    public void stopSound(String sound, SoundCategory category);
+    @Deprecated
+    void stopSound(@NonNull String sound, @Nullable SoundCategory category);
+    // Solar end
 
     /**
      * Plays an effect to just this player.
