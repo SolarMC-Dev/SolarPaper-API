@@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.persistence.PersistentDataHolder;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -16,7 +17,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * An implementation will handle the creation and application for ItemMeta.
  * This class should not be implemented by a plugin in a live environment.
  */
-public interface ItemMeta extends Cloneable, ConfigurationSerializable {
+public interface ItemMeta extends Cloneable, ConfigurationSerializable, PersistentDataHolder { // Solar - PersistentDataHolder
 
     // Solar start - adventure
     /**

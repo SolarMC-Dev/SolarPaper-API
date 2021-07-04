@@ -10,6 +10,7 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.metadata.Metadatable;
+import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.util.Vector;
 
 import java.util.List;
@@ -22,8 +23,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 /**
  * Represents a base entity in the world
  */
-public interface Entity extends Metadatable, CommandSender, Nameable, HoverEventSource<HoverEvent.ShowEntity> { // Solar - adventure
-
+public interface Entity extends Metadatable, CommandSender, Nameable, PersistentDataHolder, HoverEventSource<HoverEvent.ShowEntity> { // Solar - PersistentDataHolder and adventure
     /**
      * Gets the entity's current position
      *
