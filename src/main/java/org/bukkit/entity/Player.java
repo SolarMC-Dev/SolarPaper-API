@@ -144,13 +144,11 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
     void setPlayerListName(String name);
 
     /**
-     * Gets the name that is shown on the player list. <br>
-     * <br>
-     * Null means to use {@link #getName()}
+     * Gets the name that is shown on the player list.
      *
      * @return the player list name
      */
-    @Nullable Component playerListName();
+    @NonNull Component playerListName();
 
     /**
      * Sets the name that is shown on the in-game player list.
