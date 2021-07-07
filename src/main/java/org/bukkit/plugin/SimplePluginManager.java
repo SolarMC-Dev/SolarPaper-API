@@ -281,7 +281,7 @@ public class SimplePluginManager implements PluginManager { // Solar - non-final
                         result.add(toPlugin.toPlugin(file)); // Solar
                         loadedPlugins.add(plugin);
                         continue;
-                    } catch (InvalidPluginException ex) {
+                    } catch (InvalidPluginException | UnknownDependencyException ex) {  // Solar - catch UDE
                         LOGGER.error("Could not load {} from {}", plugin, file, ex); // Solar
                     }
                 }
@@ -306,8 +306,8 @@ public class SimplePluginManager implements PluginManager { // Solar - non-final
                             result.add(toPlugin.toPlugin(file)); // Solar
                             loadedPlugins.add(plugin);
                             continue;
-                        } catch (InvalidPluginException ex) {
-                            LOGGER.error("Could not load {} from {}", plugin, file, ex);
+                        } catch (InvalidPluginException | UnknownDependencyException ex) { // Solar - catch UDE
+                            LOGGER.error("Could not load {} from {}", plugin, file, ex); // Solar
                         }
                     }
                 }
@@ -320,7 +320,7 @@ public class SimplePluginManager implements PluginManager { // Solar - non-final
                     while (failedPluginIterator.hasNext()) {
                         T file = failedPluginIterator.next(); // Solar
                         failedPluginIterator.remove();
-                        server.getLogger().log(Level.SEVERE, "Could not load '" + file + ". circular dependency detected"); // Solar
+                        LOGGER.error("Could not load '{}'. Circular dependency detected", file); // Solar
                     }
                 }
             }
