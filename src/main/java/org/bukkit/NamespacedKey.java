@@ -4,7 +4,10 @@ import com.google.common.base.Preconditions;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Pattern;
+
+import net.kyori.adventure.key.Key;
 import org.bukkit.plugin.Plugin;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Represents a String based key which consists of two components - a namespace
@@ -17,7 +20,7 @@ import org.bukkit.plugin.Plugin;
  * underscores, hyphens, and forward slashes.
  *
  */
-public final class NamespacedKey {
+public final class NamespacedKey implements Key { // Solar - adventure Key
 
     /**
      * The namespace representing all inbuilt keys.
@@ -82,6 +85,23 @@ public final class NamespacedKey {
     public String getKey() {
         return key;
     }
+
+    // Solar start - adventure
+    @Override
+    public @NonNull String namespace() {
+        return getNamespace();
+    }
+
+    @Override
+    public @NonNull String value() {
+        return getKey();
+    }
+
+    @Override
+    public @NonNull String asString() {
+        return getNamespace() + ":" + getKey();
+    }
+    // Solar end
 
     @Override
     public int hashCode() {

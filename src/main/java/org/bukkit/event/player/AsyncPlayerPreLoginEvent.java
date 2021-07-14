@@ -1,12 +1,16 @@
 package org.bukkit.event.player;
 
 import java.net.InetAddress;
+import java.util.Objects;
 import java.util.UUID;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Stores details for players attempting to log in.
@@ -16,7 +20,7 @@ import org.bukkit.event.HandlerList;
 public class AsyncPlayerPreLoginEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     private Result result;
-    private String message;
+    private Component message; // Solar
     private final String name;
     private final InetAddress ipAddress;
     private final UUID uniqueId;
@@ -53,7 +57,7 @@ public class AsyncPlayerPreLoginEvent extends Event {
         this.profile = profile;
         // Paper end
         this.result = Result.ALLOWED;
-        this.message = "";
+        this.message = Component.empty(); // Solar
         this.name = name;
         this.ipAddress = ipAddress;
         this.uniqueId = uniqueId;
@@ -87,7 +91,7 @@ public class AsyncPlayerPreLoginEvent extends Event {
      * @param result New result to set
      */
     public void setLoginResult(final Result result) {
-        this.result = result;
+        this.result = Objects.requireNonNull(result, "result"); // Solar - no tolerance for null
     }
 
     /**
@@ -100,7 +104,16 @@ public class AsyncPlayerPreLoginEvent extends Event {
      */
     @Deprecated
     public void setResult(final PlayerPreLoginEvent.Result result) {
-        this.result = result == null ? null : Result.valueOf(result.name());
+        this.result = Result.valueOf(result.name()); // Solar - no tolerance for null
+    }
+
+    // Solar start - use adventure
+    private String serialize(Component message) {
+        return LegacyComponentSerializer.legacySection().serialize(message);
+    }
+
+    private Component deserialize(String message) {
+        return LegacyComponentSerializer.legacySection().deserialize(message);
     }
 
     /**
@@ -109,7 +122,7 @@ public class AsyncPlayerPreLoginEvent extends Event {
      *
      * @return Current kick message
      */
-    public String getKickMessage() {
+    public @NonNull Component kickMessage() {
         return message;
     }
 
@@ -118,8 +131,32 @@ public class AsyncPlayerPreLoginEvent extends Event {
      *
      * @param message New kick message
      */
+    public void kickMessage(@NonNull Component message) {
+        this.message = Objects.requireNonNull(message, "message");
+    }
+
+    /**
+     * Gets the current kick message that will be used if getResult() !=
+     * Result.ALLOWED
+     *
+     * @return Current kick message
+     * @deprecated Use the adventure {@link #kickMessage()}
+     */
+    @Deprecated
+    public String getKickMessage() {
+        return serialize(message);
+    }
+
+    /**
+     * Sets the kick message to display if getResult() != Result.ALLOWED
+     *
+     * @param message New kick message
+     * @deprecated Use the adventure {@link #kickMessage(Component)}
+     */
+    @Deprecated
     public void setKickMessage(final String message) {
-        this.message = message;
+        Objects.requireNonNull(message, "message");
+        kickMessage(deserialize(message));
     }
 
     /**
@@ -127,7 +164,7 @@ public class AsyncPlayerPreLoginEvent extends Event {
      */
     public void allow() {
         result = Result.ALLOWED;
-        message = "";
+        message = Component.empty();
     }
 
     /**
@@ -136,10 +173,23 @@ public class AsyncPlayerPreLoginEvent extends Event {
      * @param result New result for disallowing the player
      * @param message Kick message to display to the user
      */
-    public void disallow(final Result result, final String message) {
-        this.result = result;
-        this.message = message;
+    public void disallow(@NonNull final Result result, @NonNull final Component message) {
+        this.result = Objects.requireNonNull(result, "result");
+        this.message = Objects.requireNonNull(message, "message");
     }
+
+    /**
+     * Disallows the player from logging in, with the given reason
+     *
+     * @param result New result for disallowing the player
+     * @param message Kick message to display to the user
+     * @deprecated Use the adventure {@link #disallow(AsyncPlayerPreLoginEvent.Result, Component)}
+     */
+    @Deprecated
+    public void disallow(final Result result, final String message) {
+        disallow(result, deserialize(message));
+    }
+    // Solar end
 
     /**
      * Disallows the player from logging in, with the given reason
@@ -152,8 +202,7 @@ public class AsyncPlayerPreLoginEvent extends Event {
      */
     @Deprecated
     public void disallow(final PlayerPreLoginEvent.Result result, final String message) {
-        this.result = result == null ? null : Result.valueOf(result.name());
-        this.message = message;
+        disallow(Result.valueOf(result.name()), deserialize(message)); // Solar
     }
 
     /**

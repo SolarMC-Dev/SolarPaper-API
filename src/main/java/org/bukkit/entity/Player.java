@@ -2,10 +2,16 @@ package org.bukkit.entity;
 
 import java.net.InetSocketAddress;
 import java.util.Date;
+import java.util.List;
 
 import com.destroystokyo.paper.Title;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import gg.solarmc.loader.OnlineSolarPlayer;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identified;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.sound.SoundStop;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Achievement;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
@@ -32,11 +38,54 @@ import org.bukkit.map.MapView;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
 import org.bukkit.scoreboard.Scoreboard;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents a player, connected or not
  */
-public interface Player extends HumanEntity, Conversable, CommandSender, OfflinePlayer, PluginMessageRecipient, com.destroystokyo.paper.network.NetworkClient { // Paper - Extend NetworkClient
+// Solar start - extend Identified
+public interface Player extends HumanEntity, Conversable, CommandSender, OfflinePlayer, PluginMessageRecipient,
+        com.destroystokyo.paper.network.NetworkClient, Identified { // Paper - Extend NetworkClient
+
+    /**
+     * Gets the player's UUID as an {@code Identity}
+     *
+     * @return the player's identity
+     */
+    @Override
+    @NonNull
+    default Identity identity() {
+        return Identity.identity(getUniqueId());
+    }
+    // Solar end
+
+    // Solar start - adventure API
+    /**
+     * Gets the "friendly" name to display of this player. This may include
+     * color.
+     * <p>
+     * Note that this name will not be displayed in game, only in chat and
+     * places defined by plugins.
+     *
+     * @return the friendly name
+     * @deprecated Use {@link #displayName()} instead
+     */
+    @Deprecated
+    @NonNull String getDisplayName();
+
+    /**
+     * Sets the "friendly" name to display of this player. This may include
+     * color.
+     * <p>
+     * Note that this name will not be displayed in game, only in chat and
+     * places defined by plugins.
+     *
+     * @param name The new display name.
+     * @deprecated Use {@link #displayName(Component)} instead
+     */
+    @Deprecated
+    void setDisplayName(@Nullable String name);
 
     /**
      * Gets the "friendly" name to display of this player. This may include
@@ -47,7 +96,7 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      *
      * @return the friendly name
      */
-    public String getDisplayName();
+    @NonNull Component displayName();
 
     /**
      * Sets the "friendly" name to display of this player. This may include
@@ -56,16 +105,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * Note that this name will not be displayed in game, only in chat and
      * places defined by plugins.
      *
-     * @param name The new display name.
+     * @param name The new display name, null to use {@link #getName()}
      */
-    public void setDisplayName(String name);
+    void displayName(@Nullable Component name);
 
     /**
      * Gets the name that is shown on the player list.
      *
      * @return the player list name
+     * @deprecated Use the adventure {@link #playerListName()} instead
      */
-    public String getPlayerListName();
+    @Deprecated
+    String getPlayerListName();
 
     /**
      * Sets the name that is shown on the in-game player list.
@@ -87,8 +138,41 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * @throws IllegalArgumentException if the name is already used by someone
      *     else
      * @throws IllegalArgumentException if the length of the name is too long
+     * @deprecated Use the adventure {@link #playerListName(Component)} instead
      */
-    public void setPlayerListName(String name);
+    @Deprecated
+    void setPlayerListName(String name);
+
+    /**
+     * Gets the name that is shown on the player list.
+     *
+     * @return the player list name
+     */
+    @NonNull Component playerListName();
+
+    /**
+     * Sets the name that is shown on the in-game player list.
+     * <p>
+     * The name cannot be longer than 16 characters, but {@link ChatColor} is
+     * supported.
+     * <p>
+     * If the value is null, the name will be identical to {@link #getName()}.
+     * <p>
+     * This name is case sensitive and unique, two names with different casing
+     * will appear as two different people. If a player joins afterwards with
+     * a name that conflicts with a player's custom list name, the joining
+     * player's player list name will have a random number appended to it (1-2
+     * characters long in the default implementation). If the joining player's
+     * name is 15 or 16 characters long, part of the name will be truncated at
+     * the end to allow the addition of the two digits.
+     *
+     * @param name the new player list name, or null to use {@link #getName()}
+     * @throws IllegalArgumentException if the name is already used by someone
+     *     else
+     * @throws IllegalArgumentException if the length of the name is too long
+     */
+    void playerListName(@Nullable Component name);
+    // Solar end
 
     /**
      * Set the target of the player's compass.
@@ -118,12 +202,23 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      */
     public void sendRawMessage(String message);
 
+    // Solar start - adventure
+    /**
+     * Kicks player with custom kick message.
+     *
+     * @param message kick message
+     * @deprecated Use the adventure {@link #kick(Component)}
+     */
+    @Deprecated
+    void kickPlayer(@Nullable String message);
+
     /**
      * Kicks player with custom kick message.
      *
      * @param message kick message
      */
-    public void kickPlayer(String message);
+    void kick(@Nullable Component message);
+    // Solar end
 
     /**
      * Says a message (or runs a command).
@@ -266,6 +361,7 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      */
     public void playSound(Location location, Sound sound, SoundCategory category, float volume, float pitch);
 
+    // Solar start - deprecate magic values
     /**
      * Play a sound for a player at the location.
      * <p>
@@ -278,22 +374,27 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * @param category The category of the sound
      * @param volume the volume of the sound
      * @param pitch the pitch of the sound
+     * @deprecated Magic sound value. Use {@link #playSound(net.kyori.adventure.sound.Sound)} or
+     * {@link #playSound(Location, Sound, SoundCategory, float, float)} instead
      */
-    public void playSound(Location location, String sound, SoundCategory category, float volume, float pitch);
+    @Deprecated
+    void playSound(Location location, String sound, SoundCategory category, float volume, float pitch);
 
     /**
      * Stop the specified sound from playing.
      *
      * @param sound the sound to stop
      */
-    public void stopSound(Sound sound);
+    void stopSound(@NonNull Sound sound);
 
     /**
      * Stop the specified sound from playing.
      *
      * @param sound the sound to stop
+     * @deprecated Magic sound value, use {@link #stopSound(SoundStop)} instead
      */
-    public void stopSound(String sound);
+    @Deprecated
+    void stopSound(@NonNull String sound);
 
     /**
      * Stop the specified sound from playing.
@@ -301,15 +402,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * @param sound the sound to stop
      * @param category the category of the sound
      */
-    public void stopSound(Sound sound, SoundCategory category);
+    void stopSound(@NonNull Sound sound, @Nullable SoundCategory category);
 
     /**
      * Stop the specified sound from playing.
      *
      * @param sound the sound to stop
      * @param category the category of the sound
+     * @deprecated Magic sound value, use {@link #stopSound(SoundStop)} instead
      */
-    public void stopSound(String sound, SoundCategory category);
+    @Deprecated
+    void stopSound(@NonNull String sound, @Nullable SoundCategory category);
+    // Solar end
 
     /**
      * Plays an effect to just this player.
@@ -376,6 +480,7 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
     @Deprecated
     public void sendBlockChange(Location loc, int material, byte data);
 
+    // Solar start - adventure
     /**
      * Send a sign change. This fakes a sign change packet for a user at
      * a certain location. This will not actually change the world in any way.
@@ -391,7 +496,27 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * @throws IllegalArgumentException if location is null
      * @throws IllegalArgumentException if lines is non-null and has a length less than 4
      */
-    public void sendSignChange(Location loc, String[] lines) throws IllegalArgumentException;
+    void sendSignChange(@NonNull Location loc, @Nullable List<Component> lines) throws IllegalArgumentException;
+
+    /**
+     * Send a sign change. This fakes a sign change packet for a user at
+     * a certain location. This will not actually change the world in any way.
+     * This method will use a sign at the location's block or a faked sign
+     * sent via {@link #sendBlockChange(org.bukkit.Location, int, byte)} or
+     * {@link #sendBlockChange(org.bukkit.Location, org.bukkit.Material, byte)}.
+     * <p>
+     * If the client does not have a sign at the given location it will
+     * display an error message to the user.
+     *
+     * @param loc the location of the sign
+     * @param lines the new text on the sign or null to clear it
+     * @throws IllegalArgumentException if location is null
+     * @throws IllegalArgumentException if lines is non-null and has a length less than 4
+     * @deprecated Use the adventure {@link #sendSignChange(Location, List)}
+     */
+    @Deprecated
+    void sendSignChange(Location loc, String[] lines) throws IllegalArgumentException;
+    // Solar end
 
     /**
      * Render a map and send it to the player in its entirety. This may be
@@ -536,13 +661,16 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
         return banEntry;
     }
 
+    // Solar start - deprecate in favor of adventure
     /**
      * Sends an Action Bar message to the client.
      *
      * Use Section symbols for legacy color codes to send formatting.
      *
      * @param message The message to send
+     * @deprecated Use the adventure method instead
      */
+    @Deprecated
     public void sendActionBar(String message);
 
     /**
@@ -552,14 +680,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      *
      * @param alternateChar Alternate symbol such as '&amp;'
      * @param message The message to send
+     * @deprecated Use the adventure method instead
      */
+    @Deprecated
     public void sendActionBar(char alternateChar, String message);
 
     /**
      * Sends the component to the player
      *
      * @param component the components to send
+     * @deprecated Use the adventure methods instead
      */
+    @Deprecated
     @Override
     public default void sendMessage(net.md_5.bungee.api.chat.BaseComponent component) {
         spigot().sendMessage(component);
@@ -569,7 +701,9 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * Sends an array of components as a single message to the player
      *
      * @param components the components to send
+     * @deprecated Use the adventure methods instead
      */
+    @Deprecated
     @Override
     public default void sendMessage(net.md_5.bungee.api.chat.BaseComponent... components) {
         spigot().sendMessage(components);
@@ -592,7 +726,9 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      *
      * @param header content for the top of the player list
      * @param footer content for the bottom of the player list
+     * @deprecated Use the adventure methods instead
      */
+    @Deprecated
     public void setPlayerListHeaderFooter(net.md_5.bungee.api.chat.BaseComponent[] header, net.md_5.bungee.api.chat.BaseComponent[] footer);
 
     /**
@@ -600,8 +736,11 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      *
      * @param header content for the top of the player list
      * @param footer content for the bottom of the player list
+     * @deprecated Use the adventure methods instead
      */
+    @Deprecated
     public void setPlayerListHeaderFooter(net.md_5.bungee.api.chat.BaseComponent header, net.md_5.bungee.api.chat.BaseComponent footer);
+    // Solar end
 
     /**
      * Update the times for titles displayed to the player
@@ -676,6 +815,7 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
     @Deprecated
     public void showTitle(net.md_5.bungee.api.chat.BaseComponent title, net.md_5.bungee.api.chat.BaseComponent subtitle, int fadeInTicks, int stayTicks, int fadeOutTicks);
 
+    // Solar start - deprecate in favor of adventure
     /**
      * Show the title to the player, overriding any previously displayed title.
      *
@@ -683,7 +823,9 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      *
      * @param title the title to send
      * @throws NullPointerException if the title is null
+     * @deprecated Use the adventure method instead
      */
+    @Deprecated
     void sendTitle(Title title);
 
     /**
@@ -693,13 +835,19 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      *
      * @param title the title to send
      * @throws NullPointerException if title is null
+     * @deprecated Use the adventure method instead
      */
+    @Deprecated
     void updateTitle(Title title);
 
     /**
      * Hide any title that is currently visible to the player
+     *
+     * @deprecated Use adventure's {@link Audience#clearTitle()} instead
      */
+    @Deprecated
     public void hideTitle();
+    // Solar end
     // Paper end
 
     /**
@@ -1943,15 +2091,19 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        // Solar start - deprecate in favor of adventure
+        @Deprecated
         @Override
         public void sendMessage(net.md_5.bungee.api.chat.BaseComponent component) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
+        @Deprecated
         @Override
         public void sendMessage(net.md_5.bungee.api.chat.BaseComponent... components) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
+        // Solar end
 
         /**
          * Sends the component to the specified screen position of this player

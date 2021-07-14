@@ -10,6 +10,9 @@ module org.bukkit {
     requires transitive gg.solarmc.loader;
     requires transitive org.spigotmc.bungee.api.chat;
     requires transitive org.checkerframework.checker.qual;
+    requires transitive net.kyori.adventure;
+    requires transitive net.kyori.adventure.key; // Adventure is an automatic module so it does not declare this
+    requires transitive net.kyori.examination.api; // ibid
 
     requires org.yaml.snakeyaml;
     requires org.objectweb.asm;
@@ -19,6 +22,7 @@ module org.bukkit {
     requires com.google.gson;
     requires it.unimi.dsi.fastutil;
     requires space.arim.omnibus;
+    requires net.kyori.adventure.text.serializer.legacy;
 
     // Export to everyone
 
@@ -91,6 +95,10 @@ module org.bukkit {
     // org.spigotmc
     exports org.spigotmc.event.entity;
     exports org.spigotmc.event.player;
+
+    // io.papermc
+    exports io.papermc.paper.chat;
+    exports io.papermc.paper.event.player;
 
     // Qualified exports to SolarPaper-Server and SolarPaper-Assistant
     exports co.aikar.timings.internal to org.bukkit.craftbukkit;
