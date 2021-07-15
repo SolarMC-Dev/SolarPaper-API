@@ -1,4 +1,4 @@
-package gg.solarmc.solarpaper.it.paperchat;
+package gg.solarmc.solarpaper.it.paperbinarycompat;
 
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;

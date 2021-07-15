@@ -10,6 +10,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.function.UnaryOperator;
 
 /**
@@ -168,5 +173,59 @@ public interface ItemFactory {
      * @return display name of the {@link ItemStack}
      */
     Component displayName(@NonNull ItemStack itemStack);
+    // Solar end
+
+    // Solar start - ItemStack serialization API
+    /**
+     * Serializes the itemstack to NBT
+     *
+     * @param itemStack the itemstack
+     * @return the itemstack data
+     */
+    byte @NonNull[] serializeAsBytes(@NonNull ItemStack itemStack);
+
+    /**
+     * Serializes the itemstack to NBT
+     *
+     * @param itemStack the itemstack
+     * @param outputStream the output stream to which to write the itemstack data
+     * @throws IOException if an I/O error occurs
+     */
+    void serializeAsBytes(@NonNull ItemStack itemStack, @NonNull OutputStream outputStream) throws IOException;
+
+    /**
+     * Serializes the itemstack to NBT
+     *
+     * @param itemStack the itemstack
+     * @param outputChannel the output channel to which to write the itemstack data
+     * @throws IOException if an I/O error occurs
+     */
+    void serializeAsBytes(@NonNull ItemStack itemStack, @NonNull WritableByteChannel outputChannel) throws IOException;
+
+    /**
+     * Deserializes an itemstack from NBT
+     *
+     * @param itemStackData the itemstack data
+     * @return the itemstack
+     */
+    @NonNull ItemStack deserializeBytes(byte @NonNull[] itemStackData);
+
+    /**
+     * Deserializes an itemstack from NBT
+     *
+     * @param itemStackData the stream from which to read the itemstack data
+     * @return the itemstack
+     * @throws IOException if an I/O error occurs
+     */
+    @NonNull ItemStack deserializeBytes(@NonNull InputStream itemStackData) throws IOException;
+
+    /**
+     * Deserializes an itemstack from NBT
+     *
+     * @param itemStackData the channel from which to read the itemstack data
+     * @return the itemstack
+     * @throws IOException if an I/O error occurs
+     */
+    @NonNull ItemStack deserializeBytes(@NonNull ReadableByteChannel itemStackData) throws IOException;
     // Solar end
 }

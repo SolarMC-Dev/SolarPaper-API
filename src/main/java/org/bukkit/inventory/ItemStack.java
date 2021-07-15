@@ -1,6 +1,12 @@
 package org.bukkit.inventory;
 
 import com.google.common.collect.ImmutableMap;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +19,6 @@ import net.kyori.adventure.text.event.HoverEventSource;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Server;
 import org.bukkit.Utility;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.enchantments.Enchantment;
@@ -530,6 +535,88 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, HoverEve
         return result;
     }
 
+    // Solar start - ItemStack serialization API
+    /**
+     * Serializes this itemstack to NBT. <br>
+     * <br>
+     * NBT is safer for data migrations as it will use the built in data converter
+     * instead of bukkits dangerous serialization system.
+     *
+     * @return the itemstack data
+     */
+    public byte @NonNull[] serializeAsBytes() {
+        return itemFactory().serializeAsBytes(this);
+    }
+
+    /**
+     * Serializes this itemstack to NBT. <br>
+     * <br>
+     * NBT is safer for data migrations as it will use the built in data converter
+     * instead of bukkits dangerous serialization system.
+     *
+     * @param outputStream the output stream to which to write the itemstack data
+     * @throws IOException if an I/O error occurs
+     */
+    public void serializeAsBytes(@NonNull OutputStream outputStream) throws IOException {
+        itemFactory().serializeAsBytes(this, outputStream);
+    }
+
+    /**
+     * Serializes this itemstack to NBT. <br>
+     * <br>
+     * NBT is safer for data migrations as it will use the built in data converter
+     * instead of bukkits dangerous serialization system.
+     *
+     * @param outputChannel the output channel to which to write the itemstack data
+     * @throws IOException if an I/O error occurs
+     */
+    public void serializeAsBytes(@NonNull WritableByteChannel outputChannel) throws IOException {
+        itemFactory().serializeAsBytes(this, outputChannel);
+    }
+
+    private static ItemFactory globalItemFactory() {
+        return Bukkit.getItemFactory();
+    }
+
+    /**
+     * Deserializes an itemstack from NBT. <br>
+     * <br>
+     * This expects data in the format as obtained from {@link #serializeAsBytes()}
+     *
+     * @param itemStackData the itemstack data
+     * @return the deserialized itemstack
+     */
+    public static @NonNull ItemStack deserializeBytes(byte @NonNull[] itemStackData) {
+        return globalItemFactory().deserializeBytes(itemStackData);
+    }
+
+    /**
+     * Deserializes an itemstack from NBT. <br>
+     * <br>
+     * This expects data in the format as obtained from {@link #serializeAsBytes(OutputStream)}
+     *
+     * @param itemStackData the stream from which to read the itemstack data
+     * @return the deserialized itemstack
+     * @throws IOException if an I/O error occurs
+     */
+    public static @NonNull ItemStack deserializeBytes(@NonNull InputStream itemStackData) throws IOException {
+        return globalItemFactory().deserializeBytes(itemStackData);
+    }
+
+    /**
+     * Deserializes an itemstack from NBT. <br>
+     * <br>
+     * This expects data in the format as obtained from {@link #serializeAsBytes(WritableByteChannel)}
+     *
+     * @param itemStackData the channel from which to read the itemstack data
+     * @return the deserialized itemstack
+     * @throws IOException if an I/O error occurs
+     */
+    public static @NonNull ItemStack deserializeBytes(@NonNull ReadableByteChannel itemStackData) throws IOException {
+        return globalItemFactory().deserializeBytes(itemStackData);
+    }
+    // Solar end
+
     /**
      * Required method for configuration serialization
      *
@@ -790,7 +877,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, HoverEve
 
     // Solar start - adventure
     protected ItemFactory itemFactory() {
-        return Bukkit.getServer().getItemFactory();
+        return globalItemFactory();
     }
 
     @Override
