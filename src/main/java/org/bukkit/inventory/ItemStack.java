@@ -31,7 +31,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /**
  * Represents a stack of items <br>
  * <br>
- * Warning: ItemStack must not be subclassed by API users. Undefined behavior may result.
+ * Warning: ItemStack must not be subclassed at runtime (testing purposes are acceptable).
+ * Undefined behavior may result from runtime subclassing.
  */
 // Solar end
 public class ItemStack implements Cloneable, ConfigurationSerializable, HoverEventSource<HoverEvent.ShowItem> { // Solar
