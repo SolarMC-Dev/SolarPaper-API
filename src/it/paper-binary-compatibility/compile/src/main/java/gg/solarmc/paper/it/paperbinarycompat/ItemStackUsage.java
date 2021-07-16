@@ -1,4 +1,4 @@
-package gg.solarmc.solarpaper.it.paperbinarycompat;
+package gg.solarmc.paper.it.paperbinarycompat;
 
 import org.bukkit.inventory.ItemStack;
 

@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>gg.solarmc.solarpaper</groupId>
+        <groupId>gg.solarmc.paper.it.binarycompat</groupId>
         <artifactId>it-paper-binary-compat</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>

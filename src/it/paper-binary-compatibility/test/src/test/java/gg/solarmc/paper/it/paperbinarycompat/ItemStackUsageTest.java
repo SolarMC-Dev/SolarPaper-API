@@ -1,4 +1,4 @@
-package gg.solarmc.solarpaper.it.paperbinarycompat;
+package gg.solarmc.paper.it.paperbinarycompat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,7 +32,7 @@ public class ItemStackUsageTest {
 
     @BeforeEach
     public void setServer(@Mock Server server) {
-        when(server.getItemFactory()).thenReturn(itemFactory);
+        lenient().when(server.getItemFactory()).thenReturn(itemFactory);
         Bukkit.setServer(server);
     }
 

@@ -103,7 +103,7 @@ module org.bukkit {
     // Qualified exports to SolarPaper-Server and SolarPaper-Assistant
     exports co.aikar.timings.internal to org.bukkit.craftbukkit;
     exports co.aikar.util to org.bukkit.craftbukkit;
-    exports com.destroystokyo.paper.event.executor to org.bukkit.craftbukkit, gg.solarmc.serverassistant;
+    exports com.destroystokyo.paper.event.executor to org.bukkit.craftbukkit, gg.solarmc.paper.serverassistant;
     exports com.destroystokyo.paper.utils to org.bukkit.craftbukkit;
     exports org.bukkit.plugin.internal to org.bukkit.craftbukkit;
     exports org.bukkit.command.defaults to org.bukkit.craftbukkit;

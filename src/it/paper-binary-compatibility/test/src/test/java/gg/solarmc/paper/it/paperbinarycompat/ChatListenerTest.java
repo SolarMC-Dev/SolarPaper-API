@@ -1,4 +1,4 @@
-package gg.solarmc.solarpaper.it.paperbinarycompat;
+package gg.solarmc.paper.it.paperbinarycompat;
 
 import io.papermc.paper.chat.ChatRenderer;
 import net.kyori.adventure.audience.Audience;
