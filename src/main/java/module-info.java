@@ -80,6 +80,7 @@ module org.bukkit {
     exports org.bukkit.material.types;
     exports org.bukkit.metadata;
     exports org.bukkit.permissions;
+    exports org.bukkit.persistence;
     exports org.bukkit.plugin;
     exports org.bukkit.plugin.java;
     exports org.bukkit.plugin.messaging;
