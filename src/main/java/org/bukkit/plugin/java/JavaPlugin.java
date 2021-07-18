@@ -10,7 +10,10 @@ import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +33,7 @@ import org.bukkit.plugin.PluginLoader;
 
 import com.google.common.base.Charsets;
 import org.bukkit.plugin.internal.PluginData;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a Java plugin
@@ -78,6 +82,21 @@ public abstract class JavaPlugin extends PluginBase {
         }
         ((PluginClassLoader) classLoader).initialize(this);
         */
+    }
+
+    /**
+     * Comprehensive constructor with all necessary info. Useful for testing purposes. <br>
+     * <br>
+     * May be used in the future for an alternate plugin loading mechanism.
+     *
+     * @param loader the plugin loader
+     * @param server the server
+     * @param description the plugin description
+     * @param dataFolder the plugin data folder
+     * @param file the plugin file
+     */
+    public JavaPlugin(PluginLoader loader, Server server, PluginDescriptionFile description, Path dataFolder, Path file) {
+        init(loader, server, description, dataFolder.toFile(), file.toFile());
     }
     // Solar end
 
@@ -299,7 +318,7 @@ public abstract class JavaPlugin extends PluginBase {
         this.configFile = new File(dataFolder, "config.yml");
         // Paper start
         if (this.logger == null) {
-            this.logger = com.destroystokyo.paper.utils.PaperPluginLogger.getLogger(this.description);
+            this.logger = Logger.getLogger(getClass().getName()); // Solar - no nonsense, use proper logger
         }
         // Paper end
     }
@@ -402,15 +421,37 @@ public abstract class JavaPlugin extends PluginBase {
      */
     public static <T extends JavaPlugin> T getPlugin(Class<T> clazz) {
         Validate.notNull(clazz, "Null class cannot have a plugin");
-        // Solar start - unsupported
-        if (true) {
-            throw new UnsupportedOperationException("Unable to perform this operation. " +
-                    "Code your plugin better - you shouldn't be using this method for global access anyway");
-        }
-        // Solar end
         if (!JavaPlugin.class.isAssignableFrom(clazz)) {
             throw new IllegalArgumentException(clazz + " does not extend " + JavaPlugin.class);
         }
+        // Solar start - support regretfully, but log the issue with explanation
+        org.slf4j.Logger logger = LoggerFactory.getLogger(JavaPlugin.class);
+        String explanation = "Reliance on JavaPlugin.getPlugin. Often this is a sign of a badly-written plugin. Beware";
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}.", explanation,
+                    new Exception("Stack trace to identify badly-written plugin"));
+        } else if (logger.isWarnEnabled()) {
+            // Attempt to find the most likely offender
+            Optional<JavaPlugin> culprit = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk((frames) -> {
+                // Find first stack frame from a plugin class
+                return frames.map((frame) -> {
+                    try {
+                        return JavaPlugin.getProvidingPlugin(frame.getDeclaringClass());
+                    } catch (IllegalArgumentException ex) {
+                        return null;
+                    }
+                }).filter(Objects::nonNull).findFirst();
+            });
+            logger.warn(
+                    "{}. Likely culprit is {}. Enable trace logging to see a stacktrace",
+                    explanation, culprit.map(Plugin::getName).orElse("not known"));
+        }
+        for (Plugin plugin : org.bukkit.Bukkit.getServer().getPluginManager().getPlugins()) {
+            if (clazz.equals(plugin.getClass())) {
+                return clazz.cast(plugin);
+            }
+        }
+        // Solar end
         final ClassLoader cl = clazz.getClassLoader();
         if (!(cl instanceof PluginClassLoader)) {
             throw new IllegalArgumentException(clazz + " is not initialized by " + PluginClassLoader.class);
