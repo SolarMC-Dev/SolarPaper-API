@@ -388,9 +388,5 @@ public class JavaPluginLoader implements PluginLoader { // Solar - non-final, se
     protected <J extends JavaPlugin> J initPlugin(PluginData<J> pluginData) throws InvalidPluginException {
         return JavaPlugin.initializePlugin(pluginData);
     }
-
-    protected void setJulLogger(JavaPlugin plugin, java.util.logging.Logger julLogger) {
-        plugin.logger = julLogger;
-    }
     // Solar end
 }

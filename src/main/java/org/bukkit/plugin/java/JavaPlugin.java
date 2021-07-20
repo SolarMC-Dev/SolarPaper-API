@@ -85,9 +85,7 @@ public abstract class JavaPlugin extends PluginBase {
     }
 
     /**
-     * Comprehensive constructor with all necessary info. Useful for testing purposes. <br>
-     * <br>
-     * May be used in the future for an alternate plugin loading mechanism.
+     * Comprehensive constructor with all necessary info. Useful for testing purposes.
      *
      * @param loader the plugin loader
      * @param server the server
