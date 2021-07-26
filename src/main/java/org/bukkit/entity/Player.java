@@ -43,6 +43,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents a player, connected or not
+ *
+ * Note that, although the vast majority of methods have no thread safety guarantee,
+ * the {@code sendMessage} methods taking a {@link Component} (and only those taking
+ * a {@code Component}) are guaranteed to be thread safe, and may be safely used from
+ * other threads.
  */
 // Solar start - extend Identified
 public interface Player extends HumanEntity, Conversable, CommandSender, OfflinePlayer, PluginMessageRecipient,
