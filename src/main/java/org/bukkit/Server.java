@@ -98,6 +98,15 @@ public interface Server extends PluginMessageRecipient, ForwardingAudience { // 
      */
     public String getBukkitVersion();
 
+    // Solar start - add game version
+    /**
+     * Gets the game version this server implements
+     *
+     * @return the game version
+     */
+    @NonNull String getMinecraftVersion();
+    // Solar end
+
     /**
      * Gets a view of all currently logged in players. This {@linkplain
      * Collections#unmodifiableCollection(Collection) view} is a reused
