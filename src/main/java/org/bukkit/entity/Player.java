@@ -35,6 +35,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.map.MapView;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
 import org.bukkit.scoreboard.Scoreboard;
@@ -2144,13 +2145,20 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
     Spigot spigot();
     // Spigot end
 
-    // Solar-Specific API. Keep this limited
-
+    // Solar start
     /**
      * Gets the corresponding SolarPlayer
      *
      * @return the online solar player
      */
     OnlineSolarPlayer getSolarPlayer();
+
+    /**
+     * Sets the delegate permissible which will be used for permission checks
+     *
+     * @param permissible the delegate permissible
+     */
+    void setPermissible(@NonNull Permissible permissible);
+    // Solar end
 
 }
