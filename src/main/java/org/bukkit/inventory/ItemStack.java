@@ -1,11 +1,21 @@
 package org.bukkit.inventory;
 
 import com.google.common.collect.ImmutableMap;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.event.HoverEventSource;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -14,12 +24,18 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+// Solar start - javadoc improvement
 /**
- * Represents a stack of items
+ * Represents a stack of items <br>
+ * <br>
+ * Warning: ItemStack must not be subclassed at runtime (testing purposes are acceptable).
+ * Undefined behavior may result from runtime subclassing.
  */
-public class ItemStack implements Cloneable, ConfigurationSerializable {
+// Solar end
+public class ItemStack implements Cloneable, ConfigurationSerializable, HoverEventSource<HoverEvent.ShowItem> { // Solar
     private int type = 0;
     private int amount = 0;
     private MaterialData data = null;
@@ -200,7 +216,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
     public void setTypeId(int type) {
         this.type = type;
         if (this.meta != null) {
-            this.meta = Bukkit.getItemFactory().asMetaFor(meta, getType0());
+            this.meta = itemFactory().asMetaFor(meta, getType0()); // Solar - use item factory method
         }
         createData((byte) 0);
     }
@@ -338,7 +354,11 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
         if (stack == this) {
             return true;
         }
-        return getTypeId() == stack.getTypeId() && getDurability() == stack.getDurability() && hasItemMeta() == stack.hasItemMeta() && (hasItemMeta() ? Bukkit.getItemFactory().equals(getItemMeta(), stack.getItemMeta()) : true);
+        // Solar start - cleanup and use item factory method
+        boolean hasMeta = hasItemMeta();
+        return getTypeId() == stack.getTypeId() && getDurability() == stack.getDurability()
+                && hasMeta == stack.hasItemMeta() && (!hasMeta || itemFactory().equals(getItemMeta(), stack.getItemMeta()));
+        // Solar end
     }
 
     @Override
@@ -475,7 +495,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
      * @param level Level of the enchantment
      */
     public void addUnsafeEnchantment(Enchantment ench, int level) {
-        (meta == null ? meta = Bukkit.getItemFactory().getItemMeta(getType0()) : meta).addEnchant(ench, level, true);
+        (meta == null ? meta = itemFactory().getItemMeta(getType0()) : meta).addEnchant(ench, level, true);  // Solar - use item factory method
     }
 
     /**
@@ -509,12 +529,94 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
         }
 
         ItemMeta meta = getItemMeta();
-        if (!Bukkit.getItemFactory().equals(meta, null)) {
+        if (!itemFactory().equals(meta, null)) {  // Solar - use item factory method
             result.put("meta", meta);
         }
 
         return result;
     }
+
+    // Solar start - ItemStack serialization API
+    /**
+     * Serializes this itemstack to NBT. <br>
+     * <br>
+     * NBT is safer for data migrations as it will use the built in data converter
+     * instead of bukkits dangerous serialization system.
+     *
+     * @return the itemstack data
+     */
+    public byte @NonNull[] serializeAsBytes() {
+        return itemFactory().serializeAsBytes(this);
+    }
+
+    /**
+     * Serializes this itemstack to NBT. <br>
+     * <br>
+     * NBT is safer for data migrations as it will use the built in data converter
+     * instead of bukkits dangerous serialization system.
+     *
+     * @param outputStream the output stream to which to write the itemstack data
+     * @throws IOException if an I/O error occurs
+     */
+    public void serializeAsBytes(@NonNull OutputStream outputStream) throws IOException {
+        itemFactory().serializeAsBytes(this, outputStream);
+    }
+
+    /**
+     * Serializes this itemstack to NBT. <br>
+     * <br>
+     * NBT is safer for data migrations as it will use the built in data converter
+     * instead of bukkits dangerous serialization system.
+     *
+     * @param outputChannel the output channel to which to write the itemstack data
+     * @throws IOException if an I/O error occurs
+     */
+    public void serializeAsBytes(@NonNull WritableByteChannel outputChannel) throws IOException {
+        itemFactory().serializeAsBytes(this, outputChannel);
+    }
+
+    private static ItemFactory globalItemFactory() {
+        return Bukkit.getItemFactory();
+    }
+
+    /**
+     * Deserializes an itemstack from NBT. <br>
+     * <br>
+     * This expects data in the format as obtained from {@link #serializeAsBytes()}
+     *
+     * @param itemStackData the itemstack data
+     * @return the deserialized itemstack
+     */
+    public static @NonNull ItemStack deserializeBytes(byte @NonNull[] itemStackData) {
+        return globalItemFactory().deserializeBytes(itemStackData);
+    }
+
+    /**
+     * Deserializes an itemstack from NBT. <br>
+     * <br>
+     * This expects data in the format as obtained from {@link #serializeAsBytes(OutputStream)}
+     *
+     * @param itemStackData the stream from which to read the itemstack data
+     * @return the deserialized itemstack
+     * @throws IOException if an I/O error occurs
+     */
+    public static @NonNull ItemStack deserializeBytes(@NonNull InputStream itemStackData) throws IOException {
+        return globalItemFactory().deserializeBytes(itemStackData);
+    }
+
+    /**
+     * Deserializes an itemstack from NBT. <br>
+     * <br>
+     * This expects data in the format as obtained from {@link #serializeAsBytes(WritableByteChannel)}
+     *
+     * @param itemStackData the channel from which to read the itemstack data
+     * @return the deserialized itemstack
+     * @throws IOException if an I/O error occurs
+     */
+    public static @NonNull ItemStack deserializeBytes(@NonNull ReadableByteChannel itemStackData) throws IOException {
+        return globalItemFactory().deserializeBytes(itemStackData);
+    }
+    // Solar end
 
     /**
      * Required method for configuration serialization
@@ -568,7 +670,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
      * @return a copy of the current ItemStack's ItemData
      */
     public ItemMeta getItemMeta() {
-        return this.meta == null ? Bukkit.getItemFactory().getItemMeta(getType0()) : this.meta.clone();
+        return this.meta == null ? itemFactory().getItemMeta(getType0()) : this.meta.clone();  // Solar - use item factory method
     }
 
     /**
@@ -577,7 +679,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
      * @return Returns true if some meta data has been set for this item
      */
     public boolean hasItemMeta() {
-        return !Bukkit.getItemFactory().equals(meta, null);
+        return !itemFactory().equals(meta, null);  // Solar - use item factory method
     }
 
     /**
@@ -601,10 +703,10 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
             this.meta = null;
             return true;
         }
-        if (!Bukkit.getItemFactory().isApplicable(itemMeta, material)) {
+        if (!itemFactory().isApplicable(itemMeta, material)) {  // Solar - use item factory method
             return false;
         }
-        this.meta = Bukkit.getItemFactory().asMetaFor(itemMeta, material);
+        this.meta = itemFactory().asMetaFor(itemMeta, material);  // Solar - use item factory method
         if (this.meta == itemMeta) {
             this.meta = itemMeta.clone();
         }
@@ -622,7 +724,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
      * @return A potentially Data Converted ItemStack
      */
     public ItemStack ensureServerConversions() {
-        return Bukkit.getServer().getItemFactory().ensureServerConversions(this);
+        return itemFactory().ensureServerConversions(this);  // Solar - use item factory method
     }
 
     /**
@@ -633,7 +735,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
      * @return Display name of Item
      */
     public String getI18NDisplayName() {
-        return Bukkit.getServer().getItemFactory().getI18NDisplayName(this);
+        return itemFactory().getI18NDisplayName(this);  // Solar - use item factory method
     }
 
     public int getMaxItemUseDuration() {
@@ -773,4 +875,24 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
         return itemMeta.hasItemFlag(flag);
     }
     // Paper end
+
+    // Solar start - adventure
+    protected ItemFactory itemFactory() {
+        return globalItemFactory();
+    }
+
+    @Override
+    public @NonNull HoverEvent<HoverEvent.ShowItem> asHoverEvent(final @NonNull UnaryOperator<HoverEvent.ShowItem> op) {
+        return itemFactory().asHoverEvent(this, op);
+    }
+
+    /**
+     * Get the formatted display name of the {@link ItemStack}.
+     *
+     * @return display name of the {@link ItemStack}
+     */
+    public @NonNull Component displayName() {
+        return itemFactory().displayName(this);
+    }
+    // Solar end
 }

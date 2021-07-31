@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +38,7 @@ import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.TimedRegisteredListener;
 import org.bukkit.plugin.UnknownDependencyException;
 import org.bukkit.plugin.internal.EventExecutorFactory;
+import org.bukkit.plugin.internal.PluginData;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -384,13 +385,8 @@ public class JavaPluginLoader implements PluginLoader { // Solar - non-final, se
     }
 
     // Solar start - JavaPlugin access
-    protected void initPlugin(JavaPlugin plugin, PluginLoader loader, Server server, PluginDescriptionFile description,
-                           Path dataFolder, Path file) {
-        plugin.init(loader, server, description, dataFolder.toFile(), file.toFile());
-    }
-
-    protected void setJulLogger(JavaPlugin plugin, java.util.logging.Logger julLogger) {
-        plugin.logger = julLogger;
+    protected <J extends JavaPlugin> J initPlugin(PluginData<J> pluginData) throws InvalidPluginException {
+        return JavaPlugin.initializePlugin(pluginData);
     }
     // Solar end
 }

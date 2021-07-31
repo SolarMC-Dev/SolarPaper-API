@@ -10,6 +10,9 @@ module org.bukkit {
     requires transitive gg.solarmc.loader;
     requires transitive org.spigotmc.bungee.api.chat;
     requires transitive org.checkerframework.checker.qual;
+    requires transitive net.kyori.adventure;
+    requires transitive net.kyori.adventure.key; // Adventure is an automatic module so it does not declare this
+    requires transitive net.kyori.examination.api; // ibid
 
     requires org.yaml.snakeyaml;
     requires org.objectweb.asm;
@@ -19,6 +22,7 @@ module org.bukkit {
     requires com.google.gson;
     requires it.unimi.dsi.fastutil;
     requires space.arim.omnibus;
+    requires net.kyori.adventure.text.serializer.legacy;
 
     // Export to everyone
 
@@ -76,6 +80,7 @@ module org.bukkit {
     exports org.bukkit.material.types;
     exports org.bukkit.metadata;
     exports org.bukkit.permissions;
+    exports org.bukkit.persistence;
     exports org.bukkit.plugin;
     exports org.bukkit.plugin.java;
     exports org.bukkit.plugin.messaging;
@@ -92,10 +97,14 @@ module org.bukkit {
     exports org.spigotmc.event.entity;
     exports org.spigotmc.event.player;
 
+    // io.papermc
+    exports io.papermc.paper.chat;
+    exports io.papermc.paper.event.player;
+
     // Qualified exports to SolarPaper-Server and SolarPaper-Assistant
     exports co.aikar.timings.internal to org.bukkit.craftbukkit;
     exports co.aikar.util to org.bukkit.craftbukkit;
-    exports com.destroystokyo.paper.event.executor to org.bukkit.craftbukkit, gg.solarmc.serverassistant;
+    exports com.destroystokyo.paper.event.executor to org.bukkit.craftbukkit, gg.solarmc.paper.serverassistant;
     exports com.destroystokyo.paper.utils to org.bukkit.craftbukkit;
     exports org.bukkit.plugin.internal to org.bukkit.craftbukkit;
     exports org.bukkit.command.defaults to org.bukkit.craftbukkit;

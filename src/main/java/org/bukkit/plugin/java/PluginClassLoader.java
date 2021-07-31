@@ -4,7 +4,6 @@ import com.google.common.io.ByteStreams;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -19,6 +18,7 @@ import java.util.jar.Manifest;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.internal.PluginData;
 
 /**
  * A ClassLoader for plugins, to allow shared classes across multiple plugins
@@ -59,7 +59,7 @@ public final class PluginClassLoader extends URLClassLoader { // Spigot
 
         this.logger = com.destroystokyo.paper.utils.PaperPluginLogger.getLogger(description); // Paper - Register logger early
 
-        try {
+        //try { // Solar
             Class<?> jarClass;
             try {
                 jarClass = Class.forName(description.getMain(), true, this);
@@ -78,16 +78,10 @@ public final class PluginClassLoader extends URLClassLoader { // Spigot
             if (pluginClass.getClassLoader() != this) {
                 throw new IllegalStateException("JavaPlugin must be loaded through its own PluginClassLoader");
             }
-            plugin = pluginClass.getDeclaredConstructor().newInstance();
+            plugin = JavaPlugin.initializePlugin(
+                    PluginData.create(pluginClass, loader, loader.server, description, dataFolder, file, logger));
 
-            initialize(plugin);
-        } catch (IllegalAccessException | NoSuchMethodException ex) {
-            throw new InvalidPluginException("No public constructor", ex);
-        } catch (InstantiationException ex) {
-            throw new InvalidPluginException("Abnormal plugin type", ex);
-        } catch (InvocationTargetException ex) {
-            throw new InvalidPluginException("Exception thrown from constructor", ex);
-        }
+        //}
         // Solar end
     }
 

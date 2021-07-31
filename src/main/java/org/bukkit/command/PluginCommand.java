@@ -13,7 +13,15 @@ public final class PluginCommand extends Command implements PluginIdentifiableCo
     private CommandExecutor executor;
     private TabCompleter completer;
 
-    protected PluginCommand(String name, Plugin owner) {
+    // Solar start
+    /**
+     * Creates a command
+     *
+     * @param name the command name
+     * @param owner the plugin responsible for the command
+     */
+    public PluginCommand(String name, Plugin owner) {
+    // Solar end
         super(name);
         this.executor = owner;
         this.owningPlugin = owner;

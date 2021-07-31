@@ -1,9 +1,10 @@
 package org.bukkit.command;
 
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.Server;
 import org.bukkit.permissions.Permissible;
 
-public interface CommandSender extends Permissible {
+public interface CommandSender extends Permissible, Audience { // Solar
 
     /**
      * Sends this sender a message
@@ -33,6 +34,7 @@ public interface CommandSender extends Permissible {
      */
     public String getName();
 
+    // Solar start - deprecate in favor of adventure
     // Spigot start
     public class Spigot
     {
@@ -41,7 +43,9 @@ public interface CommandSender extends Permissible {
          * Sends this sender a chat component.
          *
          * @param component the components to send
+         * @deprecated Use the adventure methods instead
          */
+        @Deprecated
         public void sendMessage(net.md_5.bungee.api.chat.BaseComponent component) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
@@ -50,7 +54,9 @@ public interface CommandSender extends Permissible {
          * Sends an array of components as a single message to the sender.
          *
          * @param components the components to send
+         * @deprecated Use the adventure methods instead
          */
+        @Deprecated
         public void sendMessage(net.md_5.bungee.api.chat.BaseComponent... components) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
@@ -67,7 +73,9 @@ public interface CommandSender extends Permissible {
      * the component will be sent as legacy text.</p>
      *
      * @param component the component to send
+     * @deprecated Use the adventure methods instead
      */
+    @Deprecated
     default void sendMessage(net.md_5.bungee.api.chat.BaseComponent component) {
         this.sendMessage(component.toLegacyText());
     }
@@ -79,9 +87,12 @@ public interface CommandSender extends Permissible {
      * the components will be sent as legacy text.</p>
      *
      * @param components the components to send
+     * @deprecated Use the adventure methods instead
      */
+    @Deprecated
     default void sendMessage(net.md_5.bungee.api.chat.BaseComponent... components) {
         this.sendMessage(new net.md_5.bungee.api.chat.TextComponent(components).toLegacyText());
     }
     // Paper end
+    // Solar end
 }

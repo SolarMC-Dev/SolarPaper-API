@@ -49,10 +49,10 @@ public final class EventExecutorCreation {
             logDeop("inaccessible");
             return new MethodHandleEventExecutor(eventClass, method);
         }
-        String packageName = classDefiner.getDefiningPackage();
-        String className = packageName + ".GeneratedEventExecutor" + ASMEventExecutorGenerator.generateNameId();
+        Class<?> listenerClass = method.getDeclaringClass();
+        String className = classDefiner.getDefinedClassName(listenerClass, ASMEventExecutorGenerator.generateNameId());
         byte[] classData = ASMEventExecutorGenerator.generateEventExecutor(method, className);
-        Class<? extends EventExecutor> executorClass = classDefiner.defineClass(method.getDeclaringClass(), className, classData)
+        Class<? extends EventExecutor> executorClass = classDefiner.defineClass(listenerClass, className, classData)
                 .asSubclass(EventExecutor.class);
 
         EventExecutor asmExecutor;

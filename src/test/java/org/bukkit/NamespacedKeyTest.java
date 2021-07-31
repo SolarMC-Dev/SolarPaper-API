@@ -1,37 +1,41 @@
 package org.bukkit;
 
-import org.junit.Assert;
-import org.junit.Test;
+import net.kyori.adventure.key.Key;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+// Solar - whole class, revitalize and add more tests
 public class NamespacedKeyTest {
 
     @Test
     public void testValid() {
-        Assert.assertEquals("minecraft:foo", new NamespacedKey("minecraft", "foo").toString());
-        Assert.assertEquals("minecraft:foo/bar", new NamespacedKey("minecraft", "foo/bar").toString());
-        Assert.assertEquals("minecraft:foo/bar_baz", new NamespacedKey("minecraft", "foo/bar_baz").toString());
-        Assert.assertEquals("minecraft:foo/bar_baz-qux", new NamespacedKey("minecraft", "foo/bar_baz-qux").toString());
-        Assert.assertEquals("minecraft:foo/bar_baz-qux.quux", new NamespacedKey("minecraft", "foo/bar_baz-qux.quux").toString());
+        assertEquals("minecraft:foo", new NamespacedKey("minecraft", "foo").toString());
+        assertEquals("minecraft:foo/bar", new NamespacedKey("minecraft", "foo/bar").toString());
+        assertEquals("minecraft:foo/bar_baz", new NamespacedKey("minecraft", "foo/bar_baz").toString());
+        assertEquals("minecraft:foo/bar_baz-qux", new NamespacedKey("minecraft", "foo/bar_baz-qux").toString());
+        assertEquals("minecraft:foo/bar_baz-qux.quux", new NamespacedKey("minecraft", "foo/bar_baz-qux.quux").toString());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEmptyNamespace() {
-        new NamespacedKey("", "foo").toString();
+        assertThrows(IllegalArgumentException.class, () -> new NamespacedKey("", "foo"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEmptyKey() {
-        new NamespacedKey("minecraft", "").toString();
+        assertThrows(IllegalArgumentException.class, () -> new NamespacedKey("minecraft", ""));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInvalidNamespace() {
-        new NamespacedKey("minecraft/test", "foo").toString();
+        assertThrows(IllegalArgumentException.class, () -> new NamespacedKey("minecraft/test", "foo"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInvalidKey() {
-        new NamespacedKey("minecraft", "foo!").toString();
+        assertThrows(IllegalArgumentException.class, () -> new NamespacedKey("minecraft", "foo!"));
     }
 
     @Test
@@ -40,10 +44,26 @@ public class NamespacedKeyTest {
                 "loremipsumdolorsitametconsecteturadipiscingelitduisvolutpatvelitsitametmaximusscelerisquemorbiullamcorperexacconsequategestas").toString();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAboveLength() {
-        new NamespacedKey("loremipsumdolorsitametconsecteturadipiscingelitduisvolutpatvelitsitametmaximusscelerisquemorbiullamcorperexacconsequategestas",
+        assertThrows(IllegalArgumentException.class, () -> new NamespacedKey("loremipsumdolorsitametconsecteturadipiscingelitduisvolutpatvelitsitametmaximusscelerisquemorbiullamcorperexacconsequategestas",
                 "loremipsumdolorsitametconsecteturadipiscingelitduisvolutpatvelitsitametmaximusscelerisquemorbiullamcorperexacconsequategestas/"
-                + "loremipsumdolorsitametconsecteturadipiscingelitduisvolutpatvelitsitametmaximusscelerisquemorbiullamcorperexacconsequategestas").toString();
+                + "loremipsumdolorsitametconsecteturadipiscingelitduisvolutpatvelitsitametmaximusscelerisquemorbiullamcorperexacconsequategestas"));
     }
+
+    @Test
+    public void adventureKey() {
+        Key adventureKey = Key.key(Key.MINECRAFT_NAMESPACE, "value");
+        NamespacedKey bukkitKey = new NamespacedKey(NamespacedKey.MINECRAFT, "value");
+        assertEquals(adventureKey.namespace(), bukkitKey.namespace());
+        assertEquals(adventureKey.value(), bukkitKey.value());
+    }
+
+    @Test
+    public void adventureKeyAsString() {
+        Key adventureKey = Key.key(Key.MINECRAFT_NAMESPACE, "value");
+        NamespacedKey bukkitKey = new NamespacedKey(NamespacedKey.MINECRAFT, "value");
+        assertEquals(adventureKey.asString(), bukkitKey.asString());
+    }
+
 }

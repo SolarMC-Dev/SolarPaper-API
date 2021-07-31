@@ -11,6 +11,8 @@
 
 # maven
 /target
+pom.xml.versionsBackup
+pom.xml.releaseBackup
 
 # vim
 .*.sw[a-p]
