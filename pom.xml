@@ -72,7 +72,7 @@
 		<dependency>
 			<groupId>gg.solarmc</groupId>
 			<artifactId>bungeecord-chat</artifactId>
-			<version>0.2.0</version>
+			<version>0.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
