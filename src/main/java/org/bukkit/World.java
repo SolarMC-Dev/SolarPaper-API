@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 import org.bukkit.block.Biome;
@@ -21,9 +22,37 @@ import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
 import org.bukkit.util.Consumer;
 import org.bukkit.util.Vector;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import space.arim.omnibus.util.concurrent.ReactionStage;
 
 /**
- * Represents a world, which may contain entities, chunks and blocks
+ * Represents a world, which may contain entities, chunks and blocks. <br>
+ * <br>
+ * <b>Async Chunk Loading</b> <br>
+ * The {@code getChunkAtAsync} methods, including all various overloads,
+ * and some variants of method names, support loading a chunk asynchronously.
+ * Use these methods when you wish to let the server decide when best to load
+ * the chunk with an eye to performance. <br>
+ * <br>
+ * Strictly speaking, these methods makes no guarantee as to how fast requested chunks
+ * will load. <br>
+ * <br>
+ * All the methods provide some sort of means for running a callback on the main thread
+ * which will execute when the chunk is ready. The {@code Consumer} based methods run
+ * the given parameter on the main thread. The {@code CompletableFuture} based methods
+ * guarantee that <i>non-async</i> dependent operations will run on the main thread.
+ * Finally, {@code CentralisedFuture} based methods, whose method names are suffixed with
+ * "Asynchronously" to avoid conflicts, guarantee that <i>sync</i> dependent operations will run
+ * on the main thread; importantly, they do not provide the same guarantee as {@code CompletableFuture}
+ * based methods regarding <i>non-async</i> operations. <br>
+ * <br>
+ * All these methods support a means of hinting that the chunk need not be generated with an optional
+ * {@code gen} parameter. This hint may be ignored by some implementations. Moreover, all these methods
+ * allow an additional hint that the chunk be loaded somewhat more urgently, with the "Urgently"
+ * method name suffix. <br>
+ * <br>
+ * The chunk loading methods accepting integer coordinates use chunk coordinates, not block coordinates.
+ * Chunk coordinates are the same as the block coordinates divided by 16 and then the result floored.
  */
 public interface World extends PluginMessageRecipient, Metadatable {
 
@@ -232,7 +261,11 @@ public interface World extends PluginMessageRecipient, Metadatable {
     public boolean isChunkGenerated(int x, int z);
     // Paper end
 
+    // Solar start - update async chunks API
     /**
+     * This is the Legacy API before Java 8 was supported. Java 8 Consumer is provided,
+     * as well as future support.
+     *
      * Used by {@link World#getChunkAtAsync(Location,ChunkLoadCallback)} methods
      * to request a {@link Chunk} to be loaded, with this callback receiving
      * the chunk when it is finished.
@@ -241,68 +274,663 @@ public interface World extends PluginMessageRecipient, Metadatable {
      *
      * Timing and order this callback is fired is intentionally not defined and
      * and subject to change.
+     *
+     * @deprecated Use either the Future or the Consumer based methods
      */
-    public static interface ChunkLoadCallback {
-        public void onLoad(Chunk chunk);
+    @Deprecated
+    interface ChunkLoadCallback {
+        void onLoad(Chunk chunk);
     }
 
     /**
      * Requests a {@link Chunk} to be loaded at the given coordinates
      *
-     * This method makes no guarantee on how fast the chunk will load,
-     * and will return the chunk to the callback at a later time.
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
      *
-     * You should use this method if you need a chunk but do not need it
+     * <p>You should use this method if you need a chunk but do not need it
      * immediately, and you wish to let the server control the speed
-     * of chunk loads, keeping performance in mind.
+     * of chunk loads, keeping performance in mind.</p>
      *
-     * The {@link ChunkLoadCallback} will always be executed synchronously
-     * on the main Server Thread.
+     * <p>The {@link ChunkLoadCallback} will always be executed synchronously
+     * on the main server thread.</p>
      *
      * @param x Chunk X-coordinate of the chunk - (world coordinate / 16)
      * @param z Chunk Z-coordinate of the chunk - (world coordinate / 16)
      * @param cb Callback to receive the chunk when it is loaded.
      *           will be executed synchronously
+     * @deprecated Use either the Future or the Consumer based methods
      */
-    public void getChunkAtAsync(int x, int z, ChunkLoadCallback cb);
+    @Deprecated
+    void getChunkAtAsync(int x, int z, @NonNull ChunkLoadCallback cb);
 
     /**
      * Requests a {@link Chunk} to be loaded at the given {@link Location}
      *
-     * This method makes no guarantee on how fast the chunk will load,
-     * and will return the chunk to the callback at a later time.
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
      *
-     * You should use this method if you need a chunk but do not need it
+     * <p>You should use this method if you need a chunk but do not need it
      * immediately, and you wish to let the server control the speed
-     * of chunk loads, keeping performance in mind.
+     * of chunk loads, keeping performance in mind.</p>
      *
-     * The {@link ChunkLoadCallback} will always be executed synchronously
-     * on the main Server Thread.
+     * <p>The {@link ChunkLoadCallback} will always be executed synchronously
+     * on the main server thread.</p>
      *
      * @param location Location of the chunk
      * @param cb Callback to receive the chunk when it is loaded.
      *           will be executed synchronously
+     * @deprecated Use either the Future or the Consumer based methods
      */
-    public void getChunkAtAsync(Location location, ChunkLoadCallback cb);
+    @Deprecated
+    void getChunkAtAsync(@NonNull Location location, @NonNull ChunkLoadCallback cb);
 
     /**
      * Requests {@link Chunk} to be loaded that contains the given {@link Block}
      *
-     * This method makes no guarantee on how fast the chunk will load,
-     * and will return the chunk to the callback at a later time.
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
      *
-     * You should use this method if you need a chunk but do not need it
+     * <p>You should use this method if you need a chunk but do not need it
      * immediately, and you wish to let the server control the speed
-     * of chunk loads, keeping performance in mind.
+     * of chunk loads, keeping performance in mind.</p>
      *
-     * The {@link ChunkLoadCallback} will always be executed synchronously
-     * on the main Server Thread.
+     * <p>The {@link ChunkLoadCallback} will always be executed synchronously
+     * on the main server thread.</p>
      *
-     * @param block Block to get the containing chunk from
-     * @param cb Callback to receive the chunk when it is loaded.
+     * @param block the block at which to load the chunk
+     * @param callback Callback to receive the chunk when it is loaded.
+     *           will be executed synchronously
+     * deprecated Use either the Future or the Consumer based methods
+     */
+    @Deprecated
+    void getChunkAtAsync(@NonNull Block block, @NonNull ChunkLoadCallback callback);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>The {@link Consumer} will always be executed synchronously
+     * on the main server thread.</p>
+     *
+     * @param x Chunk X-coordinate of the chunk - (world coordinate / 16)
+     * @param z Chunk Z-coordinate of the chunk - (world coordinate / 16)
+     * @param callback Callback to receive the chunk when it is loaded.
      *           will be executed synchronously
      */
-    public void getChunkAtAsync(Block block, ChunkLoadCallback cb);
+    void getChunkAtAsync(int x, int z, @NonNull Consumer<Chunk> callback);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>The {@link Consumer} will always be executed synchronously
+     * on the main server thread.</p>
+     *
+     * @param x Chunk X-coordinate of the chunk - (world coordinate / 16)
+     * @param z Chunk Z-coordinate of the chunk - (world coordinate / 16)
+     * @param gen Should we generate a chunk if it doesn't exists or not
+     * @param callback Callback to receive the chunk when it is loaded.
+     *           will be executed synchronously
+     */
+    void getChunkAtAsync(int x, int z, boolean gen, @NonNull Consumer<Chunk> callback);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given {@link Location}
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>The {@link Consumer} will always be executed synchronously
+     * on the main server thread.</p>
+     *
+     * @param loc the location at which to load the cunk
+     * @param callback Callback to receive the chunk when it is loaded.
+     *           will be executed synchronously
+     */
+    void getChunkAtAsync(@NonNull Location loc, @NonNull Consumer<Chunk> callback);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given {@link Location}
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>The {@link Consumer} will always be executed synchronously
+     * on the main server thread.</p>
+     *
+     * @param loc the location at which to load the cunk
+     * @param gen whether to generate the chunk
+     * @param callback Callback to receive the chunk when it is loaded.
+     *           will be executed synchronously
+     */
+    void getChunkAtAsync(@NonNull Location loc, boolean gen, @NonNull Consumer<Chunk> callback);
+
+    /**
+     * Requests {@link Chunk} to be loaded that contains the given {@link Block}
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>The {@link Consumer} will always be executed synchronously
+     * on the main server thread.</p>
+     *
+     * @param block the block at which to load the chunk
+     * @param callback Callback to receive the chunk when it is loaded.
+     *           will be executed synchronously
+     */
+    void getChunkAtAsync(@NonNull Block block, @NonNull Consumer<Chunk> callback);
+
+    /**
+     * Requests {@link Chunk} to be loaded that contains the given {@link Block}
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>The {@link Consumer} will always be executed synchronously
+     * on the main server thread.</p>
+     *
+     * @param block the block at which to load the chunk
+     * @param gen whether to generate the chunk
+     * @param callback Callback to receive the chunk when it is loaded.
+     *           will be executed synchronously
+     */
+    void getChunkAtAsync(@NonNull Block block, boolean gen, @NonNull Consumer<Chunk> callback);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates.
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param loc the location at which to load the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull CompletableFuture<Chunk> getChunkAtAsync(@NonNull Location loc);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param loc the location at which to load the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull ReactionStage<Chunk> getChunkAtAsynchronously(@NonNull Location loc);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param loc the location at which to load the chunk
+     * @param gen whether to generate the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull CompletableFuture<Chunk> getChunkAtAsync(@NonNull Location loc, boolean gen);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param loc the location at which to load the chunk
+     * @param gen whether to generate the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull ReactionStage<Chunk> getChunkAtAsynchronously(@NonNull Location loc, boolean gen);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param block the block at which to load the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull CompletableFuture<Chunk> getChunkAtAsync(@NonNull Block block);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param block the block at which to load the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull ReactionStage<Chunk> getChunkAtAsynchronously(@NonNull Block block);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param block the block at which to load the chunk
+     * @param gen whether to generate the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull CompletableFuture<Chunk> getChunkAtAsync(@NonNull Block block, boolean gen);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param block the block at which to load the chunk
+     * @param gen whether to generate the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull ReactionStage<Chunk> getChunkAtAsynchronously(@NonNull Block block, boolean gen);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given chunk coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param x the chunk x coordinate
+     * @param z the chunk z coordinate
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull CompletableFuture<Chunk> getChunkAtAsync(int x, int z);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given chunk coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param x the chunk x coordinate
+     * @param z the chunk z coordinate
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull ReactionStage<Chunk> getChunkAtAsynchronously(int x, int z);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given chunk coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param x the chunk x coordinate
+     * @param z the chunk z coordinate
+     * @param gen whether to generate the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull CompletableFuture<Chunk> getChunkAtAsync(int x, int z, boolean gen);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given chunk coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param x the chunk x coordinate
+     * @param z the chunk z coordinate
+     * @param gen whether to generate the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull ReactionStage<Chunk> getChunkAtAsynchronously(int x, int z, boolean gen);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param loc the location at which to load the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull CompletableFuture<Chunk> getChunkAtAsyncUrgently(@NonNull Location loc);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param loc the location at which to load the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull ReactionStage<Chunk> getChunkAtAsynchronouslyUrgently(@NonNull Location loc);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param loc the location at which to load the chunk
+     * @param gen whether to generate the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull CompletableFuture<Chunk> getChunkAtAsyncUrgently(@NonNull Location loc, boolean gen);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param loc the location at which to load the chunk
+     * @param gen whether to generate the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull ReactionStage<Chunk> getChunkAtAsynchronouslyUrgently(@NonNull Location loc, boolean gen);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param block the block at which to load the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull CompletableFuture<Chunk> getChunkAtAsyncUrgently(@NonNull Block block);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param block the block at which to load the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull ReactionStage<Chunk> getChunkAtAsynchronouslyUrgently(@NonNull Block block);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param block the block at which to load the chunk
+     * @param gen whether to generate the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull CompletableFuture<Chunk> getChunkAtAsyncUrgently(@NonNull Block block, boolean gen);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param block the block at which to load the chunk
+     * @param gen whether to generate the chunk
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull ReactionStage<Chunk> getChunkAtAsynchronouslyUrgently(@NonNull Block block, boolean gen);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given chunk coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param x the chunk x coordinate
+     * @param z the chunk z coordinate
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull CompletableFuture<Chunk> getChunkAtAsyncUrgently(int x, int z);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given chunk coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param x the chunk x coordinate
+     * @param z the chunk z coordinate
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull ReactionStage<Chunk> getChunkAtAsynchronouslyUrgently(int x, int z);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given chunk coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param x the chunk x coordinate
+     * @param z the chunk z coordinate
+     * @param gen whether to generate the chunk
+     * @param urgent whether the requested load is urgent
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull CompletableFuture<Chunk> getChunkAtAsync(int x, int z, boolean gen, boolean urgent);
+
+    /**
+     * Requests a {@link Chunk} to be loaded at the given chunk coordinates
+     *
+     * <p>This method makes no guarantee on how fast the chunk will load,
+     * and will return the chunk to the callback at a later time.</p>
+     *
+     * <p>You should use this method if you need a chunk but do not need it
+     * immediately, and you wish to let the server control the speed
+     * of chunk loads, keeping performance in mind.</p>
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param x the chunk x coordinate
+     * @param z the chunk z coordinate
+     * @param gen whether to generate the chunk
+     * @param urgent whether the requested load is urgent
+     * @return a future that will complete when the chunk is loaded
+     */
+    @NonNull ReactionStage<Chunk> getChunkAtAsynchronously(int x, int z, boolean gen, boolean urgent);
+    // Solar end
 
     /**
      * Checks if the specified {@link Chunk} is loaded

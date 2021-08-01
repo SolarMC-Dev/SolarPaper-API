@@ -16,12 +16,28 @@ import org.bukkit.util.Vector;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
 import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import space.arim.omnibus.util.concurrent.ReactionStage;
 
 /**
- * Represents a base entity in the world
+ * Represents a base entity in the world. <br>
+ * <br>
+ * <b>Async Teleportation</b> <br>
+ * The {@code teleportAsync} and {@code teleportAsynchronously} methods
+ * allow teleporting the entity to a location after the chunk at the destination
+ * has been loaded asynchronously. These methods have similar semantics to the
+ * async chunk loading methods in {@link World}. <br>
+ * <br>
+ * The {@code CompletableFuture} based methods guarantee that <i>non-async</i> dependent
+ * operations will run on the main thread. The {@code CentralisedFuture} based methods,
+ * whose method names are suffixed with "Asynchronously" to avoid conflicts, guarantee that
+ * <i>sync</i> dependent operations will run on the main thread; importantly, they do not provide
+ * the same guarantee as {@code CompletableFuture} based methods regarding <i>non-async</i> operations.
  */
 public interface Entity extends Metadatable, CommandSender, Nameable, PersistentDataHolder, HoverEventSource<HoverEvent.ShowEntity> { // Solar - PersistentDataHolder and adventure
     /**
@@ -123,6 +139,56 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
      * @return <code>true</code> if the teleport was successful
      */
     public boolean teleport(Entity destination, TeleportCause cause);
+
+    // Solar start - async teleport API
+    /**
+     * Loads/Generates the chunk asynchronously, and then teleports the entity when the chunk is ready.
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param loc the destination
+     * @return a future which yields {@code true} if the teleport is successful
+     */
+    CompletableFuture<Boolean> teleportAsync(@NonNull Location loc);
+
+    /**
+     * Loads/Generates the chunk asynchronously, and then teleports the entity when the chunk is ready.
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param loc the destination
+     * @return a future which yields {@code true} if the teleport is successful
+     */
+    ReactionStage<Boolean> teleportAsynchronously(@NonNull Location loc);
+
+    /**
+     * Loads/Generates the chunk asynchronously, and then teleports the entity when the chunk is ready.
+     *
+     * <p>Adding a <i>non-async</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread.</p>
+     *
+     * @param loc the destination
+     * @param cause the teleportation cause
+     * @return a future which yields {@code true} if the teleport is successful
+     */
+    CompletableFuture<Boolean> teleportAsync(@NonNull Location loc, @NonNull TeleportCause cause);
+
+    /**
+     * Loads/Generates the chunk asynchronously, and then teleports the entity when the chunk is ready.
+     *
+     * <p>Adding a <i>sync</i> dependent operation to the returned future
+     * is guaranteed to be run on the main server thread. <b>However, <i>non-async</i>
+     * dependent operations may run on any thread.</b></p>
+     *
+     * @param loc the destination
+     * @param cause the teleportation cause
+     * @return a future which yields {@code true} if the teleport is successful
+     */
+    ReactionStage<Boolean> teleportAsynchronously(@NonNull Location loc, @NonNull TeleportCause cause);
+    // Solar end
 
     /**
      * Returns a list of entities within a bounding box centered around this
