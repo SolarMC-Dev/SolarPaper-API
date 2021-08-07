@@ -55,6 +55,7 @@ public interface PersistentDataType<T, Z> {
     PersistentDataType<Long, Long> LONG = new PrimitivePersistentDataType<>(Long.class);
     PersistentDataType<Float, Float> FLOAT = new PrimitivePersistentDataType<>(Float.class);
     PersistentDataType<Double, Double> DOUBLE = new PrimitivePersistentDataType<>(Double.class);
+    PersistentDataType<Boolean, Boolean> BOOLEAN = new PrimitivePersistentDataType<>(Boolean.class);
 
     /*
         String.
