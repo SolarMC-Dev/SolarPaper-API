@@ -1284,17 +1284,6 @@ public final class Bukkit {
     }
     // Paper end
 
-    // Solar start - singleton resetter
-    /**
-     * Resets the server singleton. This is intended for testing purposes where
-     * code using {@link #setServer(Server)} needs to cleanup after itself when done
-     *
-     */
-    public static void resetServer() {
-        server = null;
-    }
-    // Solar end
-
     public static Server.Spigot spigot()
     {
         return server.spigot();
