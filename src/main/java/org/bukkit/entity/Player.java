@@ -2159,6 +2159,23 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      * @param permissible the delegate permissible
      */
     void setPermissible(@NonNull Permissible permissible);
+
+    /**
+     * Gets the player's estimated ping in milliseconds. <br>
+     * <br>
+     * In Vanilla this value represents the average of the response time to the last four application
+     * layer ping packets sent. This value does not represent the network round trip time and as such
+     * may have less granularity and be impacted by other sources. <br>
+     * <br>
+     * For these reasons it <b>should not</b> be used for anti-cheat purposes. Its recommended use
+     * is only as a <b>qualitative</b> indicator of connection quality  (Vanilla uses it for this
+     * purpose in the tab list).
+     *
+     * @return the player's ping
+     */
+    default int getPing() {
+        return spigot().getPing();
+    }
     // Solar end
 
 }
