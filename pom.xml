@@ -135,7 +135,7 @@
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-commons</artifactId>
-			<version>${solar-parent.asmVersion}</version>
+			<version>${solar-parent.asm-version}</version>
 		</dependency>
 	</dependencies>
 </project>
